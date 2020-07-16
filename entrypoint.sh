@@ -20,9 +20,9 @@ fi
 if [ -z "$TEMPLATE" ]; then
 	TEMPLATE=default
 fi
-if [ -z "$TELEGRAM_PARSE_MODE" ]; then
-	TELEGRAM_PARSE_MODE=
-fi
+# if [ -z "$TELEGRAM_PARSE_MODE" ]; then
+# 	TELEGRAM_PARSE_MODE=
+# fi
 
 function set_default_telegram_template_path() {
 	local ext=txt
@@ -50,7 +50,7 @@ function default_notify_telegram() {
 	if [ -n "$TELEGRAM_PARSE_MODE"]; then
 		arg_p=" -p ${TELEGRAM_PARSE_MODE}"
 	fi
-	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$base_cmd" "$arg_p")
+	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
 	eval "$cmd"
 }
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
