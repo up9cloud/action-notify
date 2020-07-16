@@ -17,6 +17,10 @@ fi
 if [ -z "$TEMPLATE_PATH" ]; then
 	TEMPLATE_PATH="/template/${TEMPLATE}.txt"
 fi
+GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message 2>/dev/null || printf '')
+GIT_HEAD_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.commiter.username 2>/dev/null || printf '')
+GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].message 2>/dev/null || printf '')
+GIT_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].commiter.username 2>/dev/null || printf '')
 
 if [ -n "$CUSTOM_SCRIPT" ]; then
 	eval "$CUSTOM_SCRIPT"

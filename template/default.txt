@@ -1,14 +1,6 @@
-Current workflow: ${GITHUB_WORKFLOW}
-Run id: ${GITHUB_RUN_ID}
-Run number: ${GITHUB_RUN_NUMBER}
-Action id: ${GITHUB_ACTION}
-Is action: ${GITHUB_ACTIONS}
-Action trigger by ${GITHUB_ACTOR}
-Repository: ${GITHUB_REPOSITORY}
-Event name: ${GITHUB_EVENT_NAME}
-Event file: ${GITHUB_EVENT_PATH}
-Workspace: ${GITHUB_WORKSPACE}
-SHA: ${GITHUB_SHA}
-Ref: ${GITHUB_REF}
-Head ref: ${GITHUB_HEAD_REF}
-Base ref: ${GITHUB_BASE_REF}
+✅ Action #${GITHUB_RUN_NUMBER} trigger by ${GITHUB_ACTOR} success.
+
+📝 Commit by ${GIT_COMMITER_USERNAME} on ${GITHUB_REF} of ${GITHUB_REPOSITORY}:
+  ${GIT_COMMIT_MESSAGE}
+
+🌐 https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}

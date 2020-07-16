@@ -1,3 +1,4 @@
-chat id: ${TELEGRAM_CHAT_ID}
-repo owner: ${CUSTOM_VAR1}
-custom var: ${CUSTOM_VAR2}
+Run number: ${GITHUB_RUN_NUMBER}
+Commit message: ${GIT_HEAD_COMMIT_MESSAGE}
+Repo owner: ${CUSTOM_VAR1}
+Custom var: ${CUSTOM_VAR2}
