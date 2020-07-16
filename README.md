@@ -2,27 +2,27 @@
 
 ## Env variables
 
-- You can use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
-- or use this action built in variables
+| name               | description                                     |
+| ------------------ | ----------------------------------------------- |
+| CUSTOM_SCRIPT      | Fully custom control, make your own run script. |
+| TELEGRAM_BOT_TOKEN |                                                 |
+| TELEGRAM_CHAT_ID   |                                                 |
+
+- You can use this action built in variables, see above.
+- or use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
 - or make custom variable by import from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts)
 - or make your own variable
-
-### Meaningful Env
-
-| name               | description |
-| ------------------ | ----------- |
-| TELEGRAM_BOT_TOKEN |             |
-| TELEGRAM_CHAT_ID   |             |
-| CUSTOM_SCRIPT      |             |
 
 ## Examples
 
 > Custom template example
 
+This template will format by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html) program.
+
 ```txt
 chat id: ${TELEGRAM_CHAT_ID}
-owner: ${REPO_OWNER}
-custom var: ${CUSTOM_VAR1}
+repo owner: ${CUSTOM_VAR1}
+custom var: ${CUSTOM_VAR2}
 ```
 
 > Workflow example
@@ -39,12 +39,12 @@ jobs:
       env:
         TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
         TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-        # Custom template file path relative to the repo
+        # Custom template file path relative to the repo root
         TEMPLATE_PATH: "./test/custom.txt"
         # Set a custom variable from github context
-        REPO_OWNER: ${{github.repository_owner}}
+        CUSTOM_VAR1: ${{github.repository_owner}}
         # Set a custom variable
-        CUSTOM_VAR1: "a custom variable"
+        CUSTOM_VAR2: "a custom variable"
 ```
 
 See [more examples](https://github.com/up9cloud/action-notify/blob/master/.github/workflows/main.yml)

@@ -1,6 +1,6 @@
 Current workflow: ${GITHUB_WORKFLOW}
 Run id: ${GITHUB_RUN_ID}
-Run number: ${GITHUB_RUN_ID}
+Run number: ${GITHUB_RUN_NUMBER}
 Action id: ${GITHUB_ACTION}
 Is action: ${GITHUB_ACTIONS}
 Action trigger by ${GITHUB_ACTOR}

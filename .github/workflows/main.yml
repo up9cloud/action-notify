@@ -9,11 +9,11 @@ jobs:
       - name: Notify fully custom script
         uses: up9cloud/action-notify@master
         env:
-          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
-          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           CUSTOM_SCRIPT: |
             tg -v Hello world!
-            echo 123
+            cat ${GITHUB_EVENT_PATH}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
       - name: Notify telegram default
         uses: up9cloud/action-notify@master
         env:
@@ -25,5 +25,5 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE_PATH: "./test/custom.txt"
-          REPO_OWNER: ${{github.repository_owner}}
-          CUSTOM_VAR1: "a custom variable"
+          CUSTOM_VAR1: ${{github.repository_owner}}
+          CUSTOM_VAR2: "a custom variable"

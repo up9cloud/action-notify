@@ -1,3 +1,3 @@
 chat id: ${TELEGRAM_CHAT_ID}
-owner: ${REPO_OWNER}
-custom var: ${CUSTOM_VAR1}
+repo owner: ${CUSTOM_VAR1}
+custom var: ${CUSTOM_VAR2}

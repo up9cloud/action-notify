@@ -3,11 +3,11 @@ set -e
 
 function log() {
 	if [ "$VERBOSE" == "true" ]; then
-		echo [action-notify] "$@"
+		printf '[action-notify] %s\n' "$@"
 	fi
 }
 function die() {
-	echo [action-notify] "$@" 1>&2
+	printf '[action-notify] %s\n' "$@" 1>&2
 	exit 1
 }
 
@@ -24,7 +24,7 @@ if [ -n "$CUSTOM_SCRIPT" ]; then
 fi
 
 base_cmd=$(printf 'cat %s | envsubst' "$TEMPLATE_PATH")
-if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
-	cmd=$(printf '%s | tg -v -p code' "$base_cmd")
+if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CAHT_ID" ]; then
+	cmd=$(printf '%s | tg -q -p code' "$base_cmd")
 	eval "$cmd"
 fi
