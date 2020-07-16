@@ -1,39 +1,29 @@
 on: [push]
 
 jobs:
-  test1:
+  telegram:
     runs-on: ubuntu-latest
-    name: Test 1
+    name: Telegram notify
     steps:
       - uses: actions/checkout@v2
-      - name: Notify by using custom script
+      - name: Custom script
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           CUSTOM_SCRIPT: |
             echo hello world
-            tg -v hello telegram
+            tg -q hello telegram
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-  test2:
-    runs-on: ubuntu-latest
-    name: Test 2
-    steps:
-      - uses: actions/checkout@v2
-      - name: Notify telegram default
+      - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-  test3:
-    runs-on: ubuntu-latest
-    name: Test 3
-    steps:
-      - uses: actions/checkout@v2
-      - name: Notify telegram template id
+      - name: Template id
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -41,12 +31,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE: debug
-  test4:
-    runs-on: ubuntu-latest
-    name: Test 4
-    steps:
-      - uses: actions/checkout@v2
-      - name: Notify telegram custom template
+      - name: Custom template
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
