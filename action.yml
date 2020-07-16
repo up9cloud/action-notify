@@ -1,0 +1,9 @@
+# action.yml
+name: "Action - notify"
+description: ""
+runs:
+  using: "docker"
+  image: "Dockerfile"
+branding:
+  icon: "bell"
+  color: "yellow"

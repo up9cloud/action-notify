@@ -1,0 +1,21 @@
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: A job for testing
+    steps:
+      - uses: actions/checkout@v2
+      - name: Notify telegram default
+        uses: up9cloud/action-notify@master
+        env:
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+      - name: Notify telegram custom template
+        uses: up9cloud/action-notify@master
+        env:
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+          TEMPLATE_PATH: "./test/custom.txt"
+          REPO_OWNER: ${{github.repository_owner}}
+          CUSTOM_VAR1: "a custom variable"
