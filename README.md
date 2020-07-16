@@ -4,6 +4,7 @@
 
 | name                       | description                                                |
 | -------------------------- | ---------------------------------------------------------- |
+| GITHUB_JOB_STATUS          | Let action knows job status.                               |
 | TEMPLATE                   | Choose built in template, see `./template/${TEMPLATE}.txt` |
 | TEMPLATE_PATH              | Set custom template file path                              |
 | GIT_HEAD_COMMIT_MESSAGE    | Event: `.head_commit.message` (See ./test/event.json)      |
@@ -43,7 +44,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify telegram
         uses: up9cloud/action-notify@v1
+        if: cancelled() == false
         env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           # Custom template file path relative to the repo root

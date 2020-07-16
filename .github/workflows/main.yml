@@ -1,9 +1,9 @@
 on: [push]
 
 jobs:
-  test:
+  test1:
     runs-on: ubuntu-latest
-    name: A job for testing
+    name: Test 1
     steps:
       - uses: actions/checkout@v2
       - name: Notify by using custom script
@@ -14,17 +14,32 @@ jobs:
             tg -q hello telegram
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+  test2:
+    runs-on: ubuntu-latest
+    name: Test 2
+    steps:
+      - uses: actions/checkout@v2
       - name: Notify telegram default
         uses: up9cloud/action-notify@master
         env:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+  test3:
+    runs-on: ubuntu-latest
+    name: Test 3
+    steps:
+      - uses: actions/checkout@v2
       - name: Notify telegram template id
         uses: up9cloud/action-notify@master
         env:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE: debug
+  test4:
+    runs-on: ubuntu-latest
+    name: Test 4
+    steps:
+      - uses: actions/checkout@v2
       - name: Notify telegram custom template
         uses: up9cloud/action-notify@master
         env:
