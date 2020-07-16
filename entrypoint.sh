@@ -25,6 +25,6 @@ fi
 
 base_cmd=$(printf 'cat %s | envsubst' "$TEMPLATE_PATH")
 if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
-	cmd=$(printf '%s | tg -v -p md' "$base_cmd")
+	cmd=$(printf '%s | tg -v -p code' "$base_cmd")
 	eval "$cmd"
 fi
