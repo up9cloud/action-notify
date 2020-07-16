@@ -1,6 +1,6 @@
 # action.yml
 name: "Action - notify"
-description: ""
+description: "Send things to Telegram, ..."
 runs:
   using: "docker"
   image: "Dockerfile"
