@@ -7,12 +7,13 @@
 - or make custom variable by import from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts)
 - or make your own variable
 
-### Built in Env
+### Meaningful Env
 
 | name               | description |
 | ------------------ | ----------- |
 | TELEGRAM_BOT_TOKEN |             |
 | TELEGRAM_CHAT_ID   |             |
+| CUSTOM_SCRIPT      |             |
 
 ## Examples
 

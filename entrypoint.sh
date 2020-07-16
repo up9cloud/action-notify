@@ -18,8 +18,13 @@ if [ -z "$TEMPLATE_PATH" ]; then
 	TEMPLATE_PATH="/template/${TEMPLATE}.txt"
 fi
 
+if [ -n "$CUSTOM_SCRIPT" ]; then
+	eval "$CUSTOM_SCRIPT"
+	exit 0
+fi
+
 base_cmd=$(printf 'cat %s | envsubst' "$TEMPLATE_PATH")
 if [ -n "$TELEGRAM_BOT_TOKEN" ]; then
-	cmd=$(printf '%s | tg -p md' "$base_cmd")
+	cmd=$(printf '%s | tg -v -p md' "$base_cmd")
 	eval "$cmd"
 fi

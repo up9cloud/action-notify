@@ -6,6 +6,12 @@ jobs:
     name: A job for testing
     steps:
       - uses: actions/checkout@v2
+      - name: Notify fully custom script
+        uses: up9cloud/action-notify@master
+        env:
+          CUSTOM_SCRIPT: |
+            tg -v Hello world!
+            echo 123
       - name: Notify telegram default
         uses: up9cloud/action-notify@master
         env:
