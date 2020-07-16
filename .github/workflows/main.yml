@@ -9,6 +9,8 @@ jobs:
       - name: Notify fully custom script
         uses: up9cloud/action-notify@master
         env:
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           CUSTOM_SCRIPT: |
             tg -v Hello world!
             echo 123
