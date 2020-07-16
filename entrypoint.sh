@@ -31,6 +31,6 @@ fi
 
 base_cmd=$(printf 'cat %s | envsubst' "$TEMPLATE_PATH")
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
-	cmd=$(printf '%s | tg -q -m md' "$base_cmd")
+	cmd=$(printf '%s | tg -q -p md' "$base_cmd")
 	eval "$cmd"
 fi
