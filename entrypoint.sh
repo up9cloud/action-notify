@@ -17,10 +17,12 @@ fi
 if [ -z "$TEMPLATE_PATH" ]; then
 	TEMPLATE_PATH="/template/${TEMPLATE}.txt"
 fi
-GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
-GIT_HEAD_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.commiter.username || printf '')
-GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].message || printf '')
-GIT_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].commiter.username || printf '')
+if [ -f "$GITHUB_EVENT_PATH" ]; then
+	export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
+	export GIT_HEAD_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.commiter.username || printf '')
+	export GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].message || printf '')
+	export GIT_COMMITER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].commiter.username || printf '')
+fi
 
 if [ -n "$CUSTOM_SCRIPT" ]; then
 	eval "$CUSTOM_SCRIPT"

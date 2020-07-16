@@ -7,11 +7,11 @@
 | GITHUB_JOB_STATUS          | Let action knows job status.                               |
 | TEMPLATE                   | Choose built in template, see `./template/${TEMPLATE}.txt` |
 | TEMPLATE_PATH              | Set custom template file path                              |
+| CUSTOM_SCRIPT              | Set custom script, do not run default behavior.            |
 | GIT_HEAD_COMMIT_MESSAGE    | Event: `.head_commit.message` (See ./test/event.json)      |
 | GIT_HEAD_COMMITER_USERNAME | Event: `.head_commit.commiter.username`.                   |
 | GIT_COMMIT_MESSAGE         | Event: `.commits[0].message`                               |
 | GIT_COMMITER_USERNAME      | Event: `.commits[0].commiter.username`                     |
-| CUSTOM_SCRIPT              | Set custom script, do not run default behavior.            |
 | TELEGRAM_BOT_TOKEN         |                                                            |
 | TELEGRAM_CHAT_ID           |                                                            |
 
