@@ -2,18 +2,21 @@
 
 ## Env variables
 
-| name                        | description                                                |
-| --------------------------- | ---------------------------------------------------------- |
-| GITHUB_JOB_STATUS           | Let action knows job status.                               |
-| TEMPLATE                    | Choose built in template, see `./template/${TEMPLATE}.txt` |
-| TEMPLATE_PATH               | Set custom template file path                              |
-| CUSTOM_SCRIPT               | Set custom script, do not run default behavior.            |
-| GIT_HEAD_COMMIT_MESSAGE     | Event: `.head_commit.message` (See ./test/event.json)      |
-| GIT_HEAD_COMMITTER_USERNAME | Event: `.head_commit.committer.username`.                  |
-| GIT_COMMIT_MESSAGE          | Event: `.commits[0].message`                               |
-| GIT_COMMITTER_USERNAME      | Event: `.commits[0].committer.username`                    |
-| TELEGRAM_BOT_TOKEN          |                                                            |
-| TELEGRAM_CHAT_ID            |                                                            |
+| name                        | In template | description                                                       |
+| --------------------------- | ----------- | ----------------------------------------------------------------- |
+| GITHUB_JOB_STATUS           |             | Let action knows job status.                                      |
+| GIT_HEAD_COMMIT_MESSAGE     |             | Event: `.head_commit.message` (See ./test/event.json)             |
+| GIT_HEAD_COMMITTER_USERNAME |             | Event: `.head_commit.committer.username`.                         |
+| GIT_COMMIT_MESSAGE          |             | Event: `.commits[0].message`                                      |
+| GIT_COMMITTER_USERNAME      |             | Event: `.commits[0].committer.username`                           |
+| TEMPLATE                    | No          | Choose built in template, see `./template/<type>/${TEMPLATE}.txt` |
+| CUSTOM_SCRIPT               | No          | Set custom script, not run default behavior.                      |
+| TELEGRAM_BOT_TOKEN          | No          |                                                                   |
+| TELEGRAM_CHAT_ID            | No          |                                                                   |
+| TELEGRAM_PARSE_MODE         | No          | See [mode](https://core.telegram.org/bots/api#formatting-options) |
+| TELEGRAM_TEMPLATE_PATH      | No          | Set custom telegram template file path                            |
+
+> If you wanted to use variables not allow in template, you should write custom script and `export` the variables, or you could make custom ones in `step`.
 
 - You can use above built in variables.
 - or use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
@@ -24,7 +27,7 @@
 
 > Custom template example
 
-Template will format by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html) program.
+Template will be parsed by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html) program.
 
 ```txt
 Run number: ${GITHUB_RUN_NUMBER}
@@ -50,14 +53,14 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           # Custom template file path relative to the repo root
-          TEMPLATE_PATH: "./test/custom.txt"
+          TELEGRAM_TEMPLATE_PATH: "./test/custom.txt"
           # Set a custom variable from github context
           CUSTOM_VAR1: ${{github.repository_owner}}
           # Set a custom variable
           CUSTOM_VAR2: "a custom variable"
 ```
 
-See [more examples](https://github.com/up9cloud/action-notify/blob/master/.github/workflows/main.yml)
+See more [examples](https://github.com/up9cloud/action-notify/blob/master/.github/workflows/main.yml)
 
 ## TODO
 

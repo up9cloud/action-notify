@@ -6,16 +6,6 @@ jobs:
     name: Telegram notify
     steps:
       - uses: actions/checkout@v2
-      - name: Custom script
-        uses: up9cloud/action-notify@master
-        if: cancelled() == false
-        env:
-          GITHUB_JOB_STATUS: ${{ job.status }}
-          CUSTOM_SCRIPT: |
-            echo hello world
-            tg -q hello telegram
-          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
-          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
       - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -31,6 +21,14 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE: debug
+      - name: Parse mode
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+          TELEGRAM_PARSE_MODE: html
       - name: Custom template
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -39,8 +37,18 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           # Custom template file path relative to the repo root
-          TEMPLATE_PATH: "./test/custom.txt"
+          TELEGRAM_TEMPLATE_PATH: "./test/custom.txt"
           # Set a custom variable from github context
           CUSTOM_VAR1: ${{github.repository_owner}}
           # Set a custom variable
           CUSTOM_VAR2: "a custom variable"
+      - name: Custom script
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          CUSTOM_SCRIPT: |
+            echo hello world
+            tg -q hello telegram
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
