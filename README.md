@@ -5,6 +5,7 @@
 | name                        | In template | description                                                       |
 | --------------------------- | ----------- | ----------------------------------------------------------------- |
 | GITHUB_JOB_STATUS           |             | Let action knows job status.                                      |
+| GITHUB_SHA_SHORT            |             | Shorter GITHUB_SHA (`cut -c1-8`).                                 |
 | GIT_HEAD_COMMIT_MESSAGE     |             | Event: `.head_commit.message` (See ./test/event.json)             |
 | GIT_HEAD_COMMITTER_USERNAME |             | Event: `.head_commit.committer.username`.                         |
 | GIT_COMMIT_MESSAGE          |             | Event: `.commits[0].message`                                      |
