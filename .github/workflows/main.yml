@@ -8,7 +8,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify by using custom script
         uses: up9cloud/action-notify@master
+        if: cancelled() == false
         env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
           CUSTOM_SCRIPT: |
             echo hello world
             tg -q hello telegram
@@ -21,7 +23,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify telegram default
         uses: up9cloud/action-notify@master
+        if: cancelled() == false
         env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
   test3:
@@ -31,7 +35,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify telegram template id
         uses: up9cloud/action-notify@master
+        if: cancelled() == false
         env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE: debug
@@ -42,7 +48,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify telegram custom template
         uses: up9cloud/action-notify@master
+        if: cancelled() == false
         env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           # Custom template file path relative to the repo root
