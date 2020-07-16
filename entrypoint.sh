@@ -27,10 +27,7 @@ fi
 function set_default_telegram_template_path() {
 	local ext=txt
 	case "$TELEGRAM_PARSE_MODE" in
-	html)
-		ext=$TELEGRAM_PARSE_MODE
-		;;
-	md)
+	html | md)
 		ext=$TELEGRAM_PARSE_MODE
 		;;
 	esac
@@ -47,7 +44,7 @@ fi
 
 function default_notify_telegram() {
 	local arg_p=""
-	if [ -n "$TELEGRAM_PARSE_MODE"]; then
+	if [ -n "$TELEGRAM_PARSE_MODE" ]; then
 		arg_p=" -p ${TELEGRAM_PARSE_MODE}"
 	fi
 	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
