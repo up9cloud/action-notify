@@ -2,20 +2,20 @@
 
 ## Env variables
 
-| name                        | In template | description                                                       |
-| --------------------------- | ----------- | ----------------------------------------------------------------- |
-| GITHUB_JOB_STATUS           |             | Let action knows job status.                                      |
-| GITHUB_SHA_SHORT            |             | Shorter GITHUB_SHA (`cut -c1-8`).                                 |
-| GIT_HEAD_COMMIT_MESSAGE     |             | Event: `.head_commit.message` (See ./test/event.json)             |
-| GIT_HEAD_COMMITTER_USERNAME |             | Event: `.head_commit.committer.username`.                         |
-| GIT_COMMIT_MESSAGE          |             | Event: `.commits[0].message`                                      |
-| GIT_COMMITTER_USERNAME      |             | Event: `.commits[0].committer.username`                           |
-| TEMPLATE                    | No          | Choose built in template, see `./template/<type>/${TEMPLATE}.txt` |
-| CUSTOM_SCRIPT               | No          | Set custom script, not run default behavior.                      |
-| TELEGRAM_BOT_TOKEN          | No          |                                                                   |
-| TELEGRAM_CHAT_ID            | No          |                                                                   |
-| TELEGRAM_PARSE_MODE         | No          | See [mode](https://core.telegram.org/bots/api#formatting-options) |
-| TELEGRAM_TEMPLATE_PATH      | No          | Set custom telegram template file path                            |
+| name                        | In template | description                                                                            |
+| --------------------------- | ----------- | -------------------------------------------------------------------------------------- |
+| GITHUB_JOB_STATUS           |             | Let action knows job status.                                                           |
+| GITHUB_SHA_SHORT            |             | Shorter GITHUB_SHA (`cut -c1-8`).                                                      |
+| GIT_HEAD_COMMIT_MESSAGE     |             | Event: `.head_commit.message` (See ./test/event.json)                                  |
+| GIT_HEAD_COMMITTER_USERNAME |             | Event: `.head_commit.committer.username`.                                              |
+| GIT_COMMIT_MESSAGE          |             | Event: `.commits[0].message`                                                           |
+| GIT_COMMITTER_USERNAME      |             | Event: `.commits[0].committer.username`                                                |
+| TEMPLATE                    | No          | Choose built in template, see `./template/<type>/${TEMPLATE}.txt`                      |
+| CUSTOM_SCRIPT               | No          | Set custom script, not run default behavior.                                           |
+| TELEGRAM_BOT_TOKEN          |             | Get it from [@BotFather](https://telegram.me/BotFather)                                |
+| TELEGRAM_CHAT_ID            |             | Send message to bot, then get it from `https://api.telegram.org/bot<token>/getUpdates` |
+| TELEGRAM_PARSE_MODE         | No          | See [mode](https://core.telegram.org/bots/api#formatting-options)                      |
+| TELEGRAM_TEMPLATE_PATH      | No          | Set custom telegram template file path                                                 |
 
 > If you wanted to use variables not allow in template, you should write custom script and `export` the variables, or you could make custom ones in `step`.
 
@@ -74,6 +74,6 @@ See more [examples](https://github.com/up9cloud/action-notify/blob/master/.githu
 - [ ] Line
 - [ ] IRC
 - [ ] Android push notifications
-- [ ] IOS APNs
+- [ ] iOS APNs
 - [ ] Facebook
 - [ ] Google Chat
