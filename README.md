@@ -47,28 +47,28 @@ You can:
 - use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
 - make your own custom variables from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts) or whatever you need
 
-| name                            | description                                                                                     |
-| ------------------------------- | ----------------------------------------------------------------------------------------------- |
-| GITHUB_JOB_STATUS               | Let entrypoint.sh knows job status.                                                             |
-| GITHUB_JOB_STATUS_COLOR         | The RGB color hex code of job status.                                                           |
-| GITHUB_JOB_SUCCESS_COLOR        | The success color, default is `#22863a`.                                                        |
-| GITHUB_JOB_FAILURE_COLOR        | The failure color, default is `#cb2431`.                                                        |
-| GITHUB_JOB_CANCELLED_COLOR      | The cancelled color, default is `#6a737d`.                                                      |
-| GITHUB_SHA_SHORT                | Shorter GITHUB_SHA (`cut -c1-8`).                                                               |
-| GIT_HEAD_COMMIT_MESSAGE         | Event: `.head_commit.message` (See ./test/event.json from GITHUB_EVENT_PATH)                    |
-| GIT_HEAD_COMMIT_MESSAGE_ESCAPED | Same as GIT_HEAD_COMMIT_MESSAGE, but escaped, can be safely used in JSON template               |
-| GIT_HEAD_COMMITTER_USERNAME     | Event: `.head_commit.committer.username`.                                                       |
-| GIT_COMMIT_MESSAGE              | Event: `.commits[0].message`                                                                    |
-| GIT_COMMIT_MESSAGE_ESCAPED      | Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template                    |
-| GIT_COMMITTER_USERNAME          | Event: `.commits[0].committer.username`                                                         |
-| TEMPLATE                        | Built in template style, see `./template/<vendor>/${TEMPLATE}.<ext>`                            |
-| CUSTOM_SCRIPT                   | Run custom script, ignore default action.                                                       |
-| TELEGRAM_BOT_TOKEN              | Get it from [@BotFather](https://telegram.me/BotFather)                                         |
-| TELEGRAM_CHAT_ID                | Get if by sending message to bot, and checking `https://api.telegram.org/bot<token>/getUpdates` |
-| TELEGRAM_PARSE_MODE             | See [mode](https://core.telegram.org/bots/api#formatting-options)                               |
-| TELEGRAM_TEMPLATE_PATH          | Telegram template file path                                                                     |
-| SLACK_WEBHOOK_URL               | Get it from `Incoming WebHooks` app                                                             |
-| SLACK_TEMPLATE_PATH             | Slack template file path                                                                        |
+| Name                            | Description                                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ |
+| GITHUB_JOB_STATUS               | Let entrypoint.sh knows job status.                                                              |
+| GITHUB_JOB_STATUS_COLOR         | The RGB color hex code of job status.                                                            |
+| GITHUB_JOB_SUCCESS_COLOR        | The success color, default is `#22863a`.                                                         |
+| GITHUB_JOB_FAILURE_COLOR        | The failure color, default is `#cb2431`.                                                         |
+| GITHUB_JOB_CANCELLED_COLOR      | The cancelled color, default is `#6a737d`.                                                       |
+| GITHUB_SHA_SHORT                | Shorter GITHUB_SHA (`cut -c1-8`).                                                                |
+| GIT_HEAD_COMMIT_MESSAGE         | Event: `.head_commit.message` (See ./test/event.json from GITHUB_EVENT_PATH).                    |
+| GIT_HEAD_COMMIT_MESSAGE_ESCAPED | Same as GIT_HEAD_COMMIT_MESSAGE, but escaped, can be safely used in JSON template.               |
+| GIT_HEAD_COMMITTER_USERNAME     | Event: `.head_commit.committer.username`.                                                        |
+| GIT_COMMIT_MESSAGE              | Event: `.commits[0].message`.                                                                    |
+| GIT_COMMIT_MESSAGE_ESCAPED      | Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template.                    |
+| GIT_COMMITTER_USERNAME          | Event: `.commits[0].committer.username`.                                                         |
+| TEMPLATE                        | Built in template style, see `./template/<vendor>/${TEMPLATE}.<ext>`.                            |
+| CUSTOM_SCRIPT                   | Run custom script, ignore default action.                                                        |
+| TELEGRAM_BOT_TOKEN              | Get it from [@BotFather](https://telegram.me/BotFather).                                         |
+| TELEGRAM_CHAT_ID                | Get if by sending message to bot, and checking `https://api.telegram.org/bot<token>/getUpdates`. |
+| TELEGRAM_PARSE_MODE             | See [mode](https://core.telegram.org/bots/api#formatting-options), affect template `<ext>`.      |
+| TELEGRAM_TEMPLATE_PATH          | Telegram template file path.                                                                     |
+| SLACK_WEBHOOK_URL               | Get it from `Incoming WebHooks` app.                                                             |
+| SLACK_TEMPLATE_PATH             | Slack template file path.                                                                        |
 
 ## TODO
 

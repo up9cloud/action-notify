@@ -24,7 +24,7 @@
             },
             {
               "type": "mrkdwn",
-              "text": "${GIT_COMMIT_MESSAGE_ESCAPED}"
+              "text": "\n${GIT_COMMIT_MESSAGE_ESCAPED}"
             }
           ]
         }
