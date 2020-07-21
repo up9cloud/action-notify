@@ -118,4 +118,5 @@ jobs:
               ]
             }
             EOL
+            echo "$BODY"
             curl -sSL -X POST -H "content-type: application/json" -d "${BODY}" ${SLACK_WEBHOOK_URL}

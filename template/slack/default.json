@@ -21,15 +21,12 @@
             {
               "type": "mrkdwn",
               "text": "<https://github.com/${GIT_COMMITTER_USERNAME}|*${GIT_COMMITTER_USERNAME}*> committed <https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}|`${GITHUB_SHA_SHORT}`> on (*${GITHUB_REF}*)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "${GIT_COMMIT_MESSAGE_ESCAPED}"
             }
           ]
-        },
-        {
-          "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": ">${GIT_COMMIT_MESSAGE_ESCAPED}"
-          }
         }
       ]
     }
