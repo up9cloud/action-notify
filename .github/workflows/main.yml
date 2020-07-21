@@ -95,7 +95,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CUSTOM_SCRIPT: |
             echo custom script
-            read -r -d '' BODY <<- EOL
+            read -r -d '' BODY <<- EOL || true
             {
               "attachments": [
                 {
