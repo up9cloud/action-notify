@@ -95,7 +95,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CUSTOM_SCRIPT: |
             echo custom script
-            TIME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].timestamp)
             read -r -d '' BODY <<- EOL
             {
               "attachments": [
@@ -106,7 +105,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "${TIME}"
+                        "text": "#${GITHUB_RUN_NUMBER} $(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[0].timestamp)"
                       },
                       "accessory": {
                         "type": "image",

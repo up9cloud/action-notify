@@ -28,7 +28,7 @@
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": ">${GITHUB_COMMIT_MESSAGE_ESCAPED}"
+            "text": ">${GIT_COMMIT_MESSAGE_ESCAPED}"
           }
         }
       ]
