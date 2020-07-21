@@ -1,5 +1,7 @@
 # action-notify
 
+Send notifications to Telegram, Slack, ...
+
 ## Usage
 
 > Custom template file example
