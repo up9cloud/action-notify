@@ -1,6 +1,5 @@
-🛎 Github action <a
-  href="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}">#${GITHUB_RUN_NUMBER}</a> of <a
-  href="https://github.com/${GITHUB_REPOSITORY}">${GITHUB_REPOSITORY}</a> <b><u>${GITHUB_JOB_STATUS}</u></b>
-<a href="https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}">Commit</a> on ${GITHUB_REF} by <a
-  href="https://github.com/${GIT_COMMITTER_USERNAME}">@${GIT_COMMITTER_USERNAME}</a>:
+🛎 Github action <a href="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}">#${GITHUB_RUN_NUMBER}</a> of <a href="https://github.com/${GITHUB_REPOSITORY}">${GITHUB_REPOSITORY}</a> <b><i>${GITHUB_JOB_STATUS}</i></b>
+<a href="https://github.com/${GIT_COMMITTER_USERNAME}">${GIT_COMMITTER_USERNAME}</a> committed <a href="https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"><code><pre>${GITHUB_SHA_SHORT}</pre></code></a> (${GITHUB_REF}):
+<code><pre>
 ${GIT_COMMIT_MESSAGE}
+</pre></code>
