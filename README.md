@@ -25,7 +25,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Notify telegram
-        uses: up9cloud/action-notify@v1
+        # Remember to choose correct version: https://github.com/marketplace/actions/action-notify
+        uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
