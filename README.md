@@ -57,6 +57,10 @@ You can:
 | GITHUB_JOB_SUCCESS_COLOR        | The success color, default is `#22863a`.                                                         |
 | GITHUB_JOB_FAILURE_COLOR        | The failure color, default is `#cb2431`.                                                         |
 | GITHUB_JOB_CANCELLED_COLOR      | The cancelled color, default is `#6a737d`.                                                       |
+| GITHUB_JOB_STATUS_EMOJI         | The emoji of job status.                                                                         |
+| GITHUB_JOB_SUCCESS_EMOJI        | The success emoji, default is `🟢`.                                                               |
+| GITHUB_JOB_FAILURE_EMOJI        | The failure emoji, default is `🔴`.                                                               |
+| GITHUB_JOB_CANCELLED_EMOJI      | The cancelled emoji, default is `⚪️`.                                                            |
 | GITHUB_SHA_SHORT                | Shorter GITHUB_SHA (`cut -c1-8`).                                                                |
 | GIT_HEAD_COMMIT_MESSAGE         | Event: `.head_commit.message` (See ./test/event.json from GITHUB_EVENT_PATH).                    |
 | GIT_HEAD_COMMIT_MESSAGE_ESCAPED | Same as GIT_HEAD_COMMIT_MESSAGE, but escaped, can be safely used in JSON template.               |
