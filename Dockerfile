@@ -1,4 +1,4 @@
-FROM sstc/telegram-bot-send.sh
+FROM sstc/notify
 
 RUN apk add --no-cache \
 	gettext

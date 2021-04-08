@@ -29,7 +29,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TELEGRAM_PARSE_MODE: md
-      - name: Template
+      - name: Built in template
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -71,7 +71,7 @@ jobs:
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Template
+      - name: Built in template
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -120,3 +120,15 @@ jobs:
             EOL
             echo "$BODY"
             curl -sSL -X POST -H "content-type: application/json" -d "${BODY}" ${SLACK_WEBHOOK_URL}
+  slack_api:
+    runs-on: ubuntu-latest
+    name: Slack notify via api
+    steps:
+      - uses: actions/checkout@v2
+      - name: Default
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}

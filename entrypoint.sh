@@ -1,5 +1,4 @@
-#!/bin/sh
-set -e
+#!/bin/bash -e
 
 function log() {
 	if [ "$VERBOSE" == "true" ]; then
@@ -97,16 +96,20 @@ if [ -z "$TELEGRAM_TEMPLATE_PATH" ]; then
 	set_default_telegram_template_path
 fi
 function set_default_slack_template_path() {
-	SLACK_TEMPLATE_PATH="/template/slack/${TEMPLATE}.json"
+	local ext=json
+	SLACK_TEMPLATE_PATH="/template/slack/${TEMPLATE}.${ext}"
 }
 if [ -z "$SLACK_TEMPLATE_PATH" ]; then
 	set_default_slack_template_path
 fi
 
 if [ -n "$CUSTOM_SCRIPT" ]; then
+	log "\$CUSTOM_SCRIPT detected, skip default notifying."
 	eval "$CUSTOM_SCRIPT"
 	exit 0
 fi
+
+__count=0
 
 function default_notify_telegram() {
 	local arg_p=""
@@ -115,17 +118,37 @@ function default_notify_telegram() {
 	fi
 	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
 	eval "$cmd"
+	(( __count++ ))
 }
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+	log "\$TELEGRAM_BOT_TOKEN \$TELEGRAM_CHAT_ID detected, run default telegram notifying."
 	default_notify_telegram
 fi
 
-function default_notify_slack() {
+function default_notify_slack_via_webhook() {
 	local parsed_file=$(mktemp)
-	cat "$SLACK_TEMPLATE_PATH" | envsubst >$parsed_file
+	# cat "$SLACK_TEMPLATE_PATH" | envsubst >$parsed_file
+	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$SLACK_WEBHOOK_URL")
 	eval "$cmd"
+	(( __count++ ))
+}
+function default_notify_slack_via_api() {
+	local parsed_file=$(mktemp)
+	local url=https://slack.com/api/chat.postMessage
+	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
+	local cmd=$(printf 'curl -sSL -X POST -H "authorization: Bearer %s" -H "content-type: application/json; charset=UTF-8" --data @"%s" "%s"' "$SLACK_API_TOKEN" "$parsed_file" "$url")
+	eval "$cmd"
+	(( __count++ ))
 }
 if [ -n "$SLACK_WEBHOOK_URL" ]; then
-	default_notify_slack
+	log "\$SLACK_WEBHOOK_URL detected, run default slack (webhook) notifying."
+	default_notify_slack_via_webhook
+elif [ -n "$SLACK_API_TOKEN" ] && [ -n "$SLACK_CHANNEL" ]; then
+	log "\$SLACK_API_TOKEN \$SLACK_CHANNEL detected, run default slack (api) notifying."
+	default_notify_slack_via_api
+fi
+
+if [[ "$__count" -eq 0 ]]; then
+	die "No any ENV Specified, nothing send."
 fi

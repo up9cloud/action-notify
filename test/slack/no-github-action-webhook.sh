@@ -1,0 +1,15 @@
+#!/bin/bash
+
+IMAGE=action-notify
+
+GIT_COMMITTER_USERNAME="user"
+GIT_COMMITTER_MESSAGE_ESCAPED="a message"
+SLACK_WEBHOOK_URL=$(jq -r .SLACK_WEBHOOK_URL ./.config/secret.json)
+
+docker build -t $IMAGE .
+
+docker run --rm \
+	-e GIT_COMMITTER_USERNAME="${GIT_COMMITTER_USERNAME}" \
+	-e GIT_COMMIT_MESSAGE_ESCAPED="${GIT_COMMITTER_MESSAGE_ESCAPED}" \
+	-e SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL}" \
+	$IMAGE

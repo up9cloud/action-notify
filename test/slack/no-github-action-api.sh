@@ -1,0 +1,17 @@
+#!/bin/bash
+
+IMAGE=action-notify
+
+GIT_COMMITTER_USERNAME="user"
+GIT_COMMITTER_MESSAGE_ESCAPED="a message"
+SLACK_API_TOKEN=$(jq -r .SLACK_API_TOKEN ./.config/secret.json)
+SLACK_CHANNEL=$(jq -r .SLACK_CHANNEL ./.config/secret.json)
+
+docker build -t $IMAGE .
+
+docker run --rm \
+	-e GIT_COMMITTER_USERNAME="${GIT_COMMITTER_USERNAME}" \
+	-e GIT_COMMIT_MESSAGE_ESCAPED="${GIT_COMMITTER_MESSAGE_ESCAPED}" \
+	-e SLACK_API_TOKEN="${SLACK_API_TOKEN}" \
+	-e SLACK_CHANNEL="${SLACK_CHANNEL}" \
+	$IMAGE
