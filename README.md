@@ -6,7 +6,7 @@ Send notifications to Telegram, Slack, ...
 
 > Custom template file example
 
-Template will be parsed by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html) program.
+Template will be parsed by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html).
 
 ```txt
 Run number: ${GITHUB_RUN_NUMBER}
@@ -18,6 +18,7 @@ Custom var: ${CUSTOM_VAR2}
 > Workflow example
 
 ```yml
+# Beware of using this on `pull_request`! It would leak your secret!
 on: [push]
 jobs:
   deploy:
@@ -46,9 +47,9 @@ See more [examples](https://github.com/up9cloud/action-notify/blob/master/.githu
 
 You can:
 
-- use following built in variables
-- use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
-- make your own custom variables from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts) or whatever you need
+- Use following built in variables
+- Use [Github action variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
+- Make your own custom variables from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts) or whatever you need
 
 | Name                            | Description                                                                                         |
 | ------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -78,6 +79,7 @@ You can:
 | SLACK_API_TOKEN                 | Slack api token, various. If you were using bot token, remember `/invite @BOT_NAME` first.          |
 | SLACK_CHANNEL                   | Slack channel id (e.q. `#general`).                                                                 |
 | SLACK_TEMPLATE_PATH             | Slack template file path.                                                                           |
+| DISCORD_WEBHOOK_URL             | Get it from `Edit Channel -> Integrations -> Webhooks`                                              |
 
 ## TODO
 
@@ -85,7 +87,9 @@ You can:
 - Slack
   - [x] via [Incoming WebHooks](https://api.slack.com/messaging/webhooks) app.
   - [x] via [chat.postMessage](https://api.slack.com/methods/chat.postMessage) api.
-- [ ] Discord
+- Discord
+  - [x] via [Webhooks](https://discord.com/developers/docs/resources/webhook#execute-webhook)
+  - [ ] via [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
 - [ ] Teams
 - [ ] Gitter
 - [ ] Line

@@ -32,7 +32,7 @@
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "```CUSTOM_SCRIPT: ***\nSLACK_WEBHOOK_URL: ***\nSLACK_TEMPLATE_PATH: ${SLACK_TEMPLATE_PATH}\n```"
+        "text": "```CUSTOM_SCRIPT: ***\nSLACK_WEBHOOK_URL: ***\nSLACK_API_TOKEN: ***\nSLACK_CHANNEL: ${SLACK_CHANNEL}\nSLACK_TEMPLATE_PATH: ${SLACK_TEMPLATE_PATH}\n```"
       }
     }
   ]

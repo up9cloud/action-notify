@@ -55,11 +55,11 @@ jobs:
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           CUSTOM_SCRIPT: |
             echo custom script
             tg -q -f ./test/telegram/custom.txt -t document "#${GITHUB_RUN_NUMBER} ${GITHUB_JOB_STATUS}"
-          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
-          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
   slack_webhook:
     runs-on: ubuntu-latest
     name: Slack notify via webhook
@@ -132,3 +132,14 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
           SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  discord_webhook:
+    runs-on: ubuntu-latest
+    name: Discord notify via webhook
+    steps:
+      - uses: actions/checkout@v2
+      - name: Default
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

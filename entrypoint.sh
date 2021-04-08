@@ -10,6 +10,9 @@ function die() {
 	exit 1
 }
 
+################
+# Setup github #
+################
 if [ -f "$GITHUB_EVENT_PATH" ]; then
 	export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
 	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
@@ -20,9 +23,6 @@ if [ -f "$GITHUB_EVENT_PATH" ]; then
 fi
 if [ -n "$GITHUB_SHA" ]; then
 	export GITHUB_SHA_SHORT=$(echo "$GITHUB_SHA" | cut -c1-8)
-fi
-if [ -z "$TEMPLATE" ]; then
-	TEMPLATE=default
 fi
 function set_job_status_color() {
 	local color="#ffffff"
@@ -83,11 +83,23 @@ if [ -n "$GITHUB_JOB_STATUS" ]; then
 	set_job_status_emoji
 fi
 
+##################
+# Setup template #
+##################
+if [ -z "$TEMPLATE" ]; then
+	TEMPLATE=default
+fi
 function set_default_telegram_template_path() {
 	local ext=txt
 	case "$TELEGRAM_PARSE_MODE" in
 	html | md)
 		ext=$TELEGRAM_PARSE_MODE
+		;;
+	HTML)
+		ext=html
+		;;
+	markdown | Markdown | MarkdownV2)
+		ext=md
 		;;
 	esac
 	TELEGRAM_TEMPLATE_PATH="/template/telegram/${TEMPLATE}.${ext}"
@@ -95,20 +107,25 @@ function set_default_telegram_template_path() {
 if [ -z "$TELEGRAM_TEMPLATE_PATH" ]; then
 	set_default_telegram_template_path
 fi
-function set_default_slack_template_path() {
-	local ext=json
-	SLACK_TEMPLATE_PATH="/template/slack/${TEMPLATE}.${ext}"
-}
 if [ -z "$SLACK_TEMPLATE_PATH" ]; then
-	set_default_slack_template_path
+	SLACK_TEMPLATE_PATH="/template/slack/${TEMPLATE}.json"
+fi
+if [ -z "$DISCORD_TEMPLATE_PATH" ]; then
+	DISCORD_TEMPLATE_PATH="/template/discord/${TEMPLATE}.json"
 fi
 
+##########
+# Custom #
+##########
 if [ -n "$CUSTOM_SCRIPT" ]; then
 	log "\$CUSTOM_SCRIPT detected, skip default notifying."
 	eval "$CUSTOM_SCRIPT"
 	exit 0
 fi
 
+#####################
+# Default notifying #
+#####################
 __count=0
 
 function default_notify_telegram() {
@@ -127,7 +144,6 @@ fi
 
 function default_notify_slack_via_webhook() {
 	local parsed_file=$(mktemp)
-	# cat "$SLACK_TEMPLATE_PATH" | envsubst >$parsed_file
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$SLACK_WEBHOOK_URL")
 	eval "$cmd"
@@ -147,6 +163,17 @@ if [ -n "$SLACK_WEBHOOK_URL" ]; then
 elif [ -n "$SLACK_API_TOKEN" ] && [ -n "$SLACK_CHANNEL" ]; then
 	log "\$SLACK_API_TOKEN \$SLACK_CHANNEL detected, run default slack (api) notifying."
 	default_notify_slack_via_api
+fi
+
+function default_notify_discord_via_webhook() {
+	local parsed_file=$(mktemp)
+	cat "$DISCORD_TEMPLATE_PATH" | GITHUB_JOB_STATUS_COLOR="$((16${GITHUB_JOB_STATUS_COLOR}))" envsubst >$parsed_file
+	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$DISCORD_WEBHOOK_URL")
+	eval "$cmd"
+	(( __count++ ))
+}
+if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+	default_notify_discord_via_webhook
 fi
 
 if [[ "$__count" -eq 0 ]]; then
