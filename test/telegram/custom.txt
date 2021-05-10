@@ -1,4 +1,4 @@
 Run number: ${GITHUB_RUN_NUMBER}
-Commit message: ${GIT_HEAD_COMMIT_MESSAGE}
+Commit message: ${GIT_COMMIT_MESSAGE}
 Repo owner: ${CUSTOM_VAR1}
 Custom var: ${CUSTOM_VAR2}

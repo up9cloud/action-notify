@@ -44,7 +44,7 @@ Template will be parsed by [envsubst](https://www.gnu.org/software/gettext/manua
 
 ```txt
 Run number: ${GITHUB_RUN_NUMBER}
-Commit message: ${GIT_HEAD_COMMIT_MESSAGE}
+Commit message: ${GIT_COMMIT_MESSAGE}
 Repo owner: ${CUSTOM_VAR1}
 Custom var: ${CUSTOM_VAR2}
 ```
@@ -98,9 +98,9 @@ You can:
 | GIT_HEAD_COMMIT_MESSAGE         | Event: `.head_commit.message` (See ./test/event.json from GITHUB_EVENT_PATH).                       |
 | GIT_HEAD_COMMIT_MESSAGE_ESCAPED | Same as GIT_HEAD_COMMIT_MESSAGE, but escaped, can be safely used in JSON template.                  |
 | GIT_HEAD_COMMITTER_USERNAME     | Event: `.head_commit.committer.username`.                                                           |
-| GIT_COMMIT_MESSAGE              | Event: `.commits[0].message`.                                                                       |
+| GIT_COMMIT_MESSAGE              | Event: `.commits[-1].message`.                                                                      |
 | GIT_COMMIT_MESSAGE_ESCAPED      | Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template.                       |
-| GIT_COMMITTER_USERNAME          | Event: `.commits[0].committer.username`.                                                            |
+| GIT_COMMITTER_USERNAME          | Event: `.commits[-1].committer.username`.                                                           |
 | TEMPLATE                        | Built in template style, see `./template/<vendor>/${TEMPLATE}.<ext>`.                               |
 | CUSTOM_SCRIPT                   | Run custom script, ignore default action.                                                           |
 | TELEGRAM_TEMPLATE_PATH          | Telegram template file path.                                                                        |
