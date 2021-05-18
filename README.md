@@ -114,6 +114,8 @@ You can:
   - *Default value*: default
 - `CUSTOM_SCRIPT`: Run custom script, and will **ignore** default action
   - e.q. if you set this with TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, it will **only** run your CUSTOM_SCRIPT instead running built-in notify_telegram function
+- `VERBOSE`: show log or not, true or false
+  - *Default value*: false
 
 > Platform variables
 
