@@ -21,7 +21,7 @@ Send notifications all in one.
 ## Usage
 
 ```yml
-# Beware on `pull_request`! It might leak your secret!
+# It won't work on `pull_request`, github won't pass secrets.xxx for the workflow triggered by pull request
 on: [push]
 jobs:
   deploy:
