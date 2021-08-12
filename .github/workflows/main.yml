@@ -141,3 +141,28 @@ jobs:
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  standalone:
+    if: cancelled() == false
+    needs:
+      - telegram
+      - slack_webhook
+      - slack_api
+      - discord_webhook
+    runs-on: ubuntu-latest
+    steps:
+      - id: set_status
+        run: |
+          if [ "${{needs.telegram.result}}" = "success" ] &&
+            [ "${{needs.slack_webhook.result}}" = "success" ] &&
+            [ "${{needs.slack_api.result}}" = "success" ] &&
+            [ "${{needs.discord_webhook.result}}" = "success" ]; then
+            echo "::set-output name=status::success"
+          else
+            echo "::set-output name=status::failure"
+          fi
+      - uses: up9cloud/action-notify@master
+        env:
+          # GITHUB_JOB_STATUS: ${{ needs.telegram.result }}
+          GITHUB_JOB_STATUS: ${{steps.set_status.outputs.status}}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
