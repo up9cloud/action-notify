@@ -153,8 +153,8 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_TO: ${{ secrets.LINE_TO }}
-      # temporary ignore, need to get 2 user ids, can't be with group id
-      # - name: Notify multiple ids
+      # Needs to be all user ids, can't mix with group id
+      # - name: Notify multiple user ids
       #   uses: up9cloud/action-notify@master
       #   if: cancelled() == false
       #   env:
@@ -169,6 +169,30 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_TO: ${{ secrets.LINE_TO }}
           TEMPLATE: debug
+      - name: Custom script
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TO: ${{ secrets.LINE_TO }}
+          CUSTOM_SCRIPT: |
+            read -r -d '' _BODY <<- EOM || true
+            {
+                "to": "${LINE_TO}",
+                "messages":[
+                    {
+                        "type":"text",
+                        "text":"${GITHUB_JOB_STATUS_EMOJI} ${GITHUB_JOB_STATUS}"
+                    }
+                ]
+            }
+            EOM
+            
+            curl -v -X POST https://api.line.me/v2/bot/message/push \
+              -H 'Content-Type: application/json' \
+              -H "Authorization: Bearer ${LINE_CHANNEL_ACCESS_TOKEN}" \
+              -d "$_BODY"
   standalone:
     if: cancelled() == false
     needs:
