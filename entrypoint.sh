@@ -190,7 +190,11 @@ function default_notify_line() {
 	fi
 	cat "$LINE_TEMPLATE_PATH" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer %s" --data @"%s" "https://api.line.me/v2/bot/message/%s"' "$LINE_CHANNEL_ACCESS_TOKEN" "$parsed_file" "$mode")
-	eval "$cmd"
+	exec 3>&1
+	HTTP_STATUS=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
+	if ((HTTP_STATUS > 399)); then
+		die "Line api returned http code: ${HTTP_STATUS}"
+	fi
 	__count=$((__count + 1))
 }
 if [ -n "$LINE_CHANNEL_ACCESS_TOKEN" ] && [ -n "$LINE_TO" ]; then

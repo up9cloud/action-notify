@@ -26,13 +26,13 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|#${GITHUB_RUN_NUMBER} of https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}",
+                                    "text": "#${GITHUB_RUN_NUMBER} of https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}",
                                     "size": "sm",
                                     "color": "#999999",
                                     "action": {
                                         "type": "uri",
                                         "label": "action",
-                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|#${GITHUB_RUN_NUMBER}"
+                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
                                     }
                                 }
                             ]
