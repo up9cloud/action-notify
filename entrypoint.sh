@@ -113,6 +113,9 @@ fi
 if [ -z "$DISCORD_TEMPLATE_PATH" ]; then
 	DISCORD_TEMPLATE_PATH="/template/discord/${TEMPLATE}.json"
 fi
+if [ -z "$LINE_TEMPLATE_PATH" ]; then
+	LINE_TEMPLATE_PATH="/template/line.me/${TEMPLATE}.json"
+fi
 
 ##########
 # Custom #
@@ -135,7 +138,7 @@ function default_notify_telegram() {
 	fi
 	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
 	eval "$cmd"
-	__count=$((__count+1))
+	__count=$((__count + 1))
 }
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
 	log "\$TELEGRAM_BOT_TOKEN \$TELEGRAM_CHAT_ID detected, run default telegram notifying."
@@ -147,7 +150,7 @@ function default_notify_slack_via_webhook() {
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$SLACK_WEBHOOK_URL")
 	eval "$cmd"
-	__count=$((__count+1))
+	__count=$((__count + 1))
 }
 function default_notify_slack_via_api() {
 	local parsed_file=$(mktemp)
@@ -155,7 +158,7 @@ function default_notify_slack_via_api() {
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "authorization: Bearer %s" -H "content-type: application/json; charset=UTF-8" --data @"%s" "%s"' "$SLACK_API_TOKEN" "$parsed_file" "$url")
 	eval "$cmd"
-	__count=$((__count+1))
+	__count=$((__count + 1))
 }
 if [ -n "$SLACK_WEBHOOK_URL" ]; then
 	log "\$SLACK_WEBHOOK_URL detected, run default slack (webhook) notifying."
@@ -170,13 +173,32 @@ function default_notify_discord_via_webhook() {
 	cat "$DISCORD_TEMPLATE_PATH" | GITHUB_JOB_STATUS_COLOR="$((16${GITHUB_JOB_STATUS_COLOR}))" envsubst >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$DISCORD_WEBHOOK_URL")
 	eval "$cmd"
-	__count=$((__count+1))
+	__count=$((__count + 1))
 }
 if [ -n "$DISCORD_WEBHOOK_URL" ]; then
 	log "\$DISCORD_WEBHOOK_URL detected, run default discord (webhook) notifying."
 	default_notify_discord_via_webhook
 fi
 
+function default_notify_line() {
+	local parsed_file=$(mktemp)
+	local mode=push
+	local LINE_TO_JSON="\"$LINE_TO\""
+	if [[ "$LINE_TO" == *","* ]]; then
+		LINE_TO_JSON=$(echo -en "$LINE_TO" | jq --raw-input --slurp 'split(",")')
+		mode=multicast
+	fi
+	cat "$LINE_TEMPLATE_PATH" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
+	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer %s" --data @"%s" "https://api.line.me/v2/bot/message/%s"' "$LINE_CHANNEL_ACCESS_TOKEN" "$parsed_file" "$mode")
+	eval "$cmd"
+	__count=$((__count + 1))
+}
+if [ -n "$LINE_CHANNEL_ACCESS_TOKEN" ] && [ -n "$LINE_TO" ]; then
+	log "\$LINE_CHANNEL_ACCESS_TOKEN \$LINE_TO detected, run default line notifying."
+	default_notify_line
+fi
+
+# final handler
 if [[ "$__count" -eq 0 ]]; then
 	die "No any ENV Specified, nothing send."
 fi

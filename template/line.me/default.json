@@ -1,0 +1,70 @@
+{
+    "messages": [{
+    "type": "bubble",
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "box",
+          "layout": "baseline",
+          "contents": [
+            {
+              "type": "text",
+              "text": "${GITHUB_JOB_STATUS_EMOJI} GitHub action: ${GITHUB_JOB_STATUS}",
+              "size": "lg"
+            }
+          ]
+        },
+        {
+          "type": "box",
+          "layout": "baseline",
+          "contents": [
+            {
+              "type": "text",
+              "text": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|#${GITHUB_RUN_NUMBER} of https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}",
+              "size": "sm",
+              "color": "#999999",
+              "action": {
+                "type": "uri",
+                "label": "action",
+                "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|#${GITHUB_RUN_NUMBER}"
+              }
+            }
+          ]
+        },
+        {
+          "type": "box",
+          "layout": "baseline",
+          "contents": [
+            {
+              "type": "text",
+              "text": "${GIT_COMMIT_MESSAGE_ESCAPED}",
+              "size": "sm",
+              "color": "#999999"
+            }
+          ],
+          "margin": "sm"
+        },
+        {
+          "type": "box",
+          "layout": "baseline",
+          "contents": [
+            {
+              "type": "text",
+              "text": "${GITHUB_SHA_SHORT} is committed by ${GIT_COMMITTER_USERNAME}",
+              "size": "sm",
+              "color": "#999999"
+            },
+            {
+              "type": "icon",
+              "url": "https://avatars.githubusercontent.com/${GIT_COMMITTER_USERNAME}",
+              "size": "md",
+              "margin": "sm"
+            }
+          ]
+        }
+      ]
+    }
+  }]
+}

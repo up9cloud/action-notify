@@ -11,7 +11,7 @@ Send notifications all in one.
   - [ ] via [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
 - [ ] Teams
 - [ ] Gitter
-- [ ] Line
+- [x] Line
 - [ ] IRC
 - [ ] Android push notifications
 - [ ] iOS APNs
@@ -148,6 +148,19 @@ Platform related:
     - *Default value*: `./template/discord/${TEMPLATE}.json`
   - `DISCORD_WEBHOOK_URL`: Get it from `Edit Channel -> Integrations -> Webhooks`
     - **Required if** want to notify discord via webhook
+- `Line`
+  - `LINE_TEMPLATE_PATH`: Line.me template file path
+    - *Default value*: `./template/line.me/${TEMPLATE}.json`
+  - `LINE_CHANNEL_ACCESS_TOKEN`: Get it from Developer console -> Bot -> `Messaging api -> Channel access token (long-lived)`
+    - **Required if** want to notify line.me
+  - `LINE_TO`: The user id, group id or chat id. Get it from webhook objects (have to build your server to receive objects)
+    - **Required if** want to notify line.me
+    - It can be multiple ids, e.q. "Uxxxxxxxxxx,Cxxxxxxxxxx", using `,` to separate each id.
+
+      ```yml
+      env:
+        LINE_TO: "Uxxxxxxxxxx,Cxxxxxxxx"
+      ```
 
 Template related
 

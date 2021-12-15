@@ -141,6 +141,33 @@ jobs:
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  line:
+    runs-on: ubuntu-latest
+    name: Line.me notify
+    steps:
+      - uses: actions/checkout@v2
+      - name: Notify single id
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TO: ${{ secrets.LINE_TO }}
+      - name: Notify multiple ids
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TO: ${{ secrets.LINE_TO_MULTI }}
+      - name: Built in template
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TO: ${{ secrets.LINE_TO }}
+          TEMPLATE: debug
   standalone:
     if: cancelled() == false
     needs:
@@ -148,6 +175,7 @@ jobs:
       - slack_webhook
       - slack_api
       - discord_webhook
+      - line
     runs-on: ubuntu-latest
     steps:
       - id: set_status
@@ -155,7 +183,8 @@ jobs:
           if [ "${{needs.telegram.result}}" = "success" ] &&
             [ "${{needs.slack_webhook.result}}" = "success" ] &&
             [ "${{needs.slack_api.result}}" = "success" ] &&
-            [ "${{needs.discord_webhook.result}}" = "success" ]; then
+            [ "${{needs.discord_webhook.result}}" = "success" ] &&
+            [ "${{needs.line.result}}" = "success" ]; then
             echo "::set-output name=status::success"
           else
             echo "::set-output name=status::failure"
