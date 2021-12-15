@@ -138,10 +138,10 @@ function default_notify_telegram() {
 	fi
 	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
 	eval "$cmd"
-	__count=$((__count + 1))
 }
 if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
 	log "\$TELEGRAM_BOT_TOKEN \$TELEGRAM_CHAT_ID detected, run default telegram notifying."
+	__count=$((__count + 1))
 	default_notify_telegram
 fi
 
@@ -150,7 +150,6 @@ function default_notify_slack_via_webhook() {
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$SLACK_WEBHOOK_URL")
 	eval "$cmd"
-	__count=$((__count + 1))
 }
 function default_notify_slack_via_api() {
 	local parsed_file=$(mktemp)
@@ -158,13 +157,14 @@ function default_notify_slack_via_api() {
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "authorization: Bearer %s" -H "content-type: application/json; charset=UTF-8" --data @"%s" "%s"' "$SLACK_API_TOKEN" "$parsed_file" "$url")
 	eval "$cmd"
-	__count=$((__count + 1))
 }
 if [ -n "$SLACK_WEBHOOK_URL" ]; then
 	log "\$SLACK_WEBHOOK_URL detected, run default slack (webhook) notifying."
+	__count=$((__count + 1))
 	default_notify_slack_via_webhook
 elif [ -n "$SLACK_API_TOKEN" ] && [ -n "$SLACK_CHANNEL" ]; then
 	log "\$SLACK_API_TOKEN \$SLACK_CHANNEL detected, run default slack (api) notifying."
+	__count=$((__count + 1))
 	default_notify_slack_via_api
 fi
 
@@ -173,10 +173,10 @@ function default_notify_discord_via_webhook() {
 	cat "$DISCORD_TEMPLATE_PATH" | GITHUB_JOB_STATUS_COLOR="$((16${GITHUB_JOB_STATUS_COLOR}))" envsubst >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "$DISCORD_WEBHOOK_URL")
 	eval "$cmd"
-	__count=$((__count + 1))
 }
 if [ -n "$DISCORD_WEBHOOK_URL" ]; then
 	log "\$DISCORD_WEBHOOK_URL detected, run default discord (webhook) notifying."
+	__count=$((__count + 1))
 	default_notify_discord_via_webhook
 fi
 
@@ -195,10 +195,10 @@ function default_notify_line() {
 	if ((HTTP_STATUS > 399)); then
 		die "Line api returned http code: ${HTTP_STATUS}"
 	fi
-	__count=$((__count + 1))
 }
 if [ -n "$LINE_CHANNEL_ACCESS_TOKEN" ] && [ -n "$LINE_TO" ]; then
 	log "\$LINE_CHANNEL_ACCESS_TOKEN \$LINE_TO detected, run default line notifying."
+	__count=$((__count + 1))
 	default_notify_line
 fi
 
