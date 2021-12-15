@@ -15,8 +15,14 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "${GITHUB_JOB_STATUS_EMOJI} GitHub action: ${GITHUB_JOB_STATUS}",
-                                    "size": "lg"
+                                    "text": "${GITHUB_JOB_STATUS_EMOJI} GitHub action #${GITHUB_RUN_NUMBER}: ${GITHUB_JOB_STATUS}",
+                                    "size": "md",
+                                    "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+                                    },
+                                    "wrap": true
                                 }
                             ]
                         },
@@ -26,16 +32,23 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "#${GITHUB_RUN_NUMBER} of https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}",
+                                    "text": "${GITHUB_REPOSITORY}",
                                     "size": "sm",
                                     "color": "#999999",
                                     "action": {
                                         "type": "uri",
                                         "label": "action",
-                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-                                    }
+                                        "uri": "https://github.com/${GITHUB_REPOSITORY}"
+                                    },
+                                    "wrap": true,
+                                    "align": "end"
                                 }
                             ]
+                        },
+                        {
+                          "type": "separator",
+                          "color": "#eeeeee",
+                          "margin": "sm"
                         },
                         {
                             "type": "box",
@@ -45,7 +58,9 @@
                                     "type": "text",
                                     "text": "${GIT_COMMIT_MESSAGE_ESCAPED}",
                                     "size": "sm",
-                                    "color": "#999999"
+                                    "color": "#999999",
+                                    "wrap": true,
+                                    "maxLines": 3
                                 }
                             ],
                             "margin": "sm"
@@ -56,15 +71,47 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "${GITHUB_SHA_SHORT} is committed by ${GIT_COMMITTER_USERNAME}",
+                                    "text": "commit ${GITHUB_SHA_SHORT}",
                                     "size": "sm",
-                                    "color": "#999999"
+                                    "color": "#999999",
+                                    "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+                                    },
+                                    "wrap": true,
+                                    "align": "end"
+                                }
+                            ]
+                        },
+                        {
+                          "type": "separator",
+                          "color": "#eeeeee",
+                          "margin": "sm"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "by ${GIT_COMMITTER_USERNAME}",
+                                    "size": "sm",
+                                    "color": "#999999",
+                                    "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://github.com/${GIT_COMMITTER_USERNAME}"
+                                    },
+                                    "wrap": true,
+                                    "align": "end"
                                 },
                                 {
                                     "type": "icon",
                                     "url": "https://avatars.githubusercontent.com/${GIT_COMMITTER_USERNAME}",
-                                    "size": "md",
-                                    "margin": "sm"
+                                    "size": "xl",
+                                    "margin": "sm",
+                                    "offsetTop": "sm"
                                 }
                             ]
                         }
