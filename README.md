@@ -155,11 +155,12 @@ Platform related:
     - **Required if** want to notify line.me
   - `LINE_TO`: The user id, group id or chat id. Get it from webhook objects (have to build your server to receive objects)
     - **Required if** want to notify line.me
-    - It can be multiple ids, e.q. "Uxxxxxxxxxx,Cxxxxxxxxxx", using `,` to separate each id.
+    - It can be multiple `user` ids, e.q. "Uxxxxxxxxxxx,Uxxxxxxxxxxx", using `,` to separate each id.
+    - Be ware, if you want to notify multiple ids with group or chat id, you `have` to trigger this action one by one.
 
       ```yml
       env:
-        LINE_TO: "Uxxxxxxxxxx,Cxxxxxxxx"
+        LINE_TO: "Uxxxxxxxxxxx,Uxxxxxxxxxxx"
       ```
 
 Template related

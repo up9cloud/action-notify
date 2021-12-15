@@ -153,13 +153,14 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_TO: ${{ secrets.LINE_TO }}
-      - name: Notify multiple ids
-        uses: up9cloud/action-notify@master
-        if: cancelled() == false
-        env:
-          GITHUB_JOB_STATUS: ${{ job.status }}
-          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          LINE_TO: ${{ secrets.LINE_TO_MULTI }}
+      # temporary ignore, need to get 2 user ids, can't be with group id
+      # - name: Notify multiple ids
+      #   uses: up9cloud/action-notify@master
+      #   if: cancelled() == false
+      #   env:
+      #     GITHUB_JOB_STATUS: ${{ job.status }}
+      #     LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+      #     LINE_TO: ${{ secrets.LINE_TO_MULTI }}
       - name: Built in template
         uses: up9cloud/action-notify@master
         if: cancelled() == false
