@@ -15,12 +15,12 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "${STATUS_EMOJI} GitHub Action #${GITHUB_RUN_NUMBER}: ${GITHUB_JOB_STATUS}",
+                                    "text": "${STATUS_EMOJI} Drone CI build #${DRONE_BUILD_NUMBER}: ${DRONE_BUILD_STATUS}",
                                     "size": "md",
                                     "action": {
                                         "type": "uri",
                                         "label": "action",
-                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+                                        "uri": "${DRONE_BUILD_LINK}"
                                     },
                                     "wrap": true
                                 }
@@ -32,13 +32,13 @@
                             "contents": [
                                 {
                                     "type": "text",
-                                    "text": "${GITHUB_REPOSITORY}",
+                                    "text": "${DRONE_REPO}",
                                     "size": "sm",
                                     "color": "#999999",
                                     "action": {
                                         "type": "uri",
                                         "label": "action",
-                                        "uri": "https://github.com/${GITHUB_REPOSITORY}"
+                                        "uri": "${DRONE_REPO_LINK}"
                                     },
                                     "wrap": true,
                                     "align": "end"
@@ -77,7 +77,7 @@
                                     "action": {
                                         "type": "uri",
                                         "label": "action",
-                                        "uri": "https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+                                        "uri": "${DRONE_COMMIT_LINK}"
                                     },
                                     "wrap": true,
                                     "align": "end"
@@ -98,17 +98,12 @@
                                     "text": "by ${GIT_COMMITTER_USERNAME}",
                                     "size": "sm",
                                     "color": "#999999",
-                                    "action": {
-                                        "type": "uri",
-                                        "label": "action",
-                                        "uri": "https://github.com/${GIT_COMMITTER_USERNAME}"
-                                    },
                                     "wrap": true,
                                     "align": "end"
                                 },
                                 {
                                     "type": "icon",
-                                    "url": "https://avatars.githubusercontent.com/${GIT_COMMITTER_USERNAME}",
+                                    "url": "${DRONE_COMMIT_AUTHOR_AVATAR}",
                                     "size": "xl",
                                     "margin": "sm",
                                     "offsetTop": "sm"

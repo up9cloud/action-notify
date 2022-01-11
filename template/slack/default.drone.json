@@ -7,7 +7,7 @@
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "GitHub Action <https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|#${GITHUB_RUN_NUMBER}> of <https://github.com/${GITHUB_REPOSITORY}|${GITHUB_REPOSITORY}> _*${GITHUB_JOB_STATUS}*_"
+            "text": "Drone CI <${DRONE_BUILD_LINK}|#${DRONE_BUILD_NUMBER}> of <${DRONE_REPO_LINK}|${DRONE_REPO}> _*${DRONE_BUILD_STATUS}*_"
           }
         },
         {
@@ -15,12 +15,12 @@
           "elements": [
             {
               "type": "image",
-              "image_url": "https://avatars.githubusercontent.com/${GIT_COMMITTER_USERNAME}",
+              "image_url": "${DRONE_COMMIT_AUTHOR_AVATAR}",
               "alt_text": "${GIT_COMMITTER_USERNAME}"
             },
             {
               "type": "mrkdwn",
-              "text": "<https://github.com/${GIT_COMMITTER_USERNAME}|*${GIT_COMMITTER_USERNAME}*> committed <https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}|`${GIT_SHA_SHORT}`> (${GITHUB_REF}):"
+              "text": "*${GIT_COMMITTER_USERNAME}* committed <${DRONE_COMMIT_LINK}|`${GIT_SHA_SHORT}`> (${DRONE_COMMIT_REF}):"
             }
           ]
         },

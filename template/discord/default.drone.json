@@ -1,0 +1,18 @@
+{
+    "content": "${STATUS_EMOJI} Drone CI build [#${DRONE_BUILD_NUMBER}](${DRONE_BUILD_LINK}) of [${DRONE_REPO}](${DRONE_REPO_LINK}) _**${DRONE_BUILD_STATUS}**_",
+    "tts": false,
+    "embeds": [
+        {
+            "description": "committed [`${GIT_SHA_SHORT}`](${DRONE_COMMIT_LINK}) (${DRONE_COMMIT_REF}):",
+            "url": "${DRONE_BUILD_LINK}",
+            "color": ${STATUS_COLOR_DECIMAL},
+            "footer": {
+                "text": "${GIT_COMMIT_MESSAGE_ESCAPED}"
+            },
+            "author": {
+                "name": "${DRONE_COMMIT_AUTHOR}",
+                "icon_url": "${DRONE_COMMIT_AUTHOR_AVATAR}"
+            }
+        }
+    ]
+}
