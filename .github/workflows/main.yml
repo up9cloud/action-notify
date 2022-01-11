@@ -215,6 +215,7 @@ jobs:
             echo "::set-output name=status::failure"
             exit 2
           fi
+      - uses: actions/checkout@v2
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
