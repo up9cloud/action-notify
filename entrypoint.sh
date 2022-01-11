@@ -282,7 +282,7 @@ function default_notify_line() {
 		LINE_TO_JSON=$(echo -en "${!K_LINE_TO}" | jq --raw-input --slurp 'split(",")')
 		mode=multicast
 	fi
-	cat "${!K_LINE_TEMPLATE_PATH}" | envsubst | jq --argjson to "${!K_LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
+	cat "${!K_LINE_TEMPLATE_PATH}" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer %s" --data @"%s" "https://api.line.me/v2/bot/message/%s"' "${!K_LINE_CHANNEL_ACCESS_TOKEN}" "$parsed_file" "$mode")
 	exec 3>&1
 	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))

@@ -213,16 +213,17 @@ jobs:
             echo "::set-output name=status::success"
           else
             echo "::set-output name=status::failure"
+            exit 2
           fi
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
-        if: ${{ github.event_name == 'push' && success() }}
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: sstc/action-notify
           tag_with_ref: true
       - uses: up9cloud/action-notify@master
+        if: cancelled() == false
         env:
           # GITHUB_JOB_STATUS: ${{ needs.telegram.result }}
           GITHUB_JOB_STATUS: ${{steps.set_status.outputs.status}}
