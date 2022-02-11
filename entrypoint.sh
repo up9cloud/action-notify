@@ -47,23 +47,25 @@ if [ "$GITHUB_ACTIONS" == "true" ]; then
 	log "Github event (${GITHUB_EVENT_PATH}):"
 	log "$(cat $GITHUB_EVENT_PATH)"
 	if [ $(cat "$GITHUB_EVENT_PATH" | jq 'has("workflow_run")') == "true" ]; then
-		export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.message || printf '')
-		export GIT_HEAD_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.committer.name || printf '')
-		export GIT_COMMIT_MESSAGE="$GIT_HEAD_COMMIT_MESSAGE"
-		export GIT_COMMITTER_USERNAME="$GIT_HEAD_COMMITTER_USERNAME"
+		export GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.message || printf '')
+		export GIT_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.committer.name || printf '')
 	else
-		export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
-		export GIT_HEAD_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.committer.username || printf '')
 		export GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[-1].message || printf '')
 		export GIT_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[-1].committer.username || printf '')
+
+		# backward compatible
+		export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
+		export GIT_HEAD_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.committer.username || printf '')
 	fi
-	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_SHA_SHORT=$(echo "$GITHUB_SHA" | cut -c1-8)
 
 	setup_keys
 
 	# backward compatible
+	export GIT_HEAD_COMMIT_MESSAGE="$GIT_COMMIT_MESSAGE"
+	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
+	export GIT_HEAD_COMMITTER_USERNAME="$GIT_COMMITTER_USERNAME"
 	export GITHUB_SHA_SHORT="$GIT_SHA_SHORT"
 	if [ -n "$GITHUB_JOB_SUCCESS_COLOR" ]; then
 		STATUS_COLOR_SUCCESS="$GITHUB_JOB_SUCCESS_COLOR"

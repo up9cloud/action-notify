@@ -152,8 +152,9 @@ Platform related:
     - **Required if** want to notify line.me
   - `LINE_TO`: The user id, group id or chat id. Get it from webhook objects (have to build your server to receive objects)
     - **Required if** want to notify line.me
-    - It can be multiple `user` ids, e.q. "Uxxxxxxxxxxx,Uxxxxxxxxxxx", using `,` to separate each id.
-    - Be ware, if you want to notify multiple ids mixed with group or chat id, you `have` to trigger this action one by one.
+    - It can be multiple ids
+      - Must be `user`s, if you want to notify mixed ids with group or chat id, you `have` to trigger this action one by one.
+      - Using `,` to separate each id, e.q.
 
       ```yml
       env:
@@ -168,35 +169,27 @@ Template related
     - GitHub Action: default
     - Drone CI: default.drone
 - `GIT_SHA_SHORT`: Shorter commit sha `cut -c1-8`
-- `GIT_HEAD_COMMIT_MESSAGE`:
-  - GitHub Action: event value `.head_commit.message` (See ./test/event.json from GITHUB_EVENT_PATH)
-  - Drone CI: ""
-- `GIT_HEAD_COMMIT_MESSAGE_ESCAPED`: same as GIT_HEAD_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
-  - e.q. `{"msg":"${GIT_HEAD_COMMIT_MESSAGE_ESCAPED}"}`
-- `GIT_HEAD_COMMITTER_USERNAME`
-  - GitHub Action: event value `.head_commit.committer.username`
-  - Drone CI: ""
 - `GIT_COMMIT_MESSAGE`
-  - GitHub Action: event value `.commits[-1].message`
+  - GitHub Action: event's value `.commits[-1].message`, `.workflow_run.head_commit.message`
   - Drone CI: same as DRONE_COMMIT_MESSAGE
 - `GIT_COMMIT_MESSAGE_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
   - e.q. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
 - `GIT_COMMITTER_USERNAME`
-  - GitHub Action: event value `.commits[-1].committer.username`
+  - GitHub Action: event's value `.commits[-1].committer.username`, `.workflow_run.head_commit.committer.name`
   - Drone CI: same as DRONE_COMMIT_AUTHOR
 
-- `STATUS_COLOR`: The RGB color hex code of job status
-- `STATUS_COLOR_DECIMAL`: The RGB color decimal code of job status
-- `STATUS_COLOR_SUCCESS`: The success color
-  - *Default value*: `#22863a`
-- `STATUS_COLOR_FAILURE`: The failure color
-  - *Default value*: `#cb2431`
-- `STATUS_COLOR_CANCELLED`: The cancelled color
-  - *Default value*: `#6a737d`
-- `STATUS_EMOJI`: The emoji of job status.
-- `STATUS_EMOJI_SUCCESS`: The success emoji
-  - *Default value*: `🟢`
-- `STATUS_EMOJI_FAILURE`: The failure emoji
-  - *Default value*: `🔴`
-- `STATUS_EMOJI_CANCELLED`: The cancelled emoji
-  - *Default value*: `⚪️`
+- `STATUS_COLOR`: The RGB color hex code based on job status and following settings:
+  - `STATUS_COLOR_SUCCESS`: The success color
+    - *Default value*: `#22863a`
+  - `STATUS_COLOR_FAILURE`: The failure color
+    - *Default value*: `#cb2431`
+  - `STATUS_COLOR_CANCELLED`: The cancelled color
+    - *Default value*: `#6a737d`
+- `STATUS_COLOR_DECIMAL`: The decimal code of `STATUS_COLOR`
+- `STATUS_EMOJI`: The emoji based on job status and following settings:
+  - `STATUS_EMOJI_SUCCESS`: The success emoji
+    - *Default value*: `🟢`
+  - `STATUS_EMOJI_FAILURE`: The failure emoji
+    - *Default value*: `🔴`
+  - `STATUS_EMOJI_CANCELLED`: The cancelled emoji
+    - *Default value*: `⚪️`
