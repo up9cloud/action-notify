@@ -1,13 +1,14 @@
 #!/bin/bash -e
 
+__err=0
 function log() {
 	if [ "$VERBOSE" == "true" ]; then
 		printf '[action-notify] %s\n' "$@"
 	fi
 }
-function die() {
+function err() {
+	__err=$((__err + 1))
 	printf '[action-notify] %s\n' "$@" 1>&2
-	exit 1
 }
 
 function setup_keys() {
@@ -42,6 +43,8 @@ function setup_keys() {
 
 # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
 if [ "$GITHUB_ACTIONS" == "true" ]; then
+	log "Github event (${GITHUB_EVENT_PATH}):"
+	log "$(cat $GITHUB_EVENT_PATH)"
 	export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
 	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_HEAD_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.committer.username || printf '')
@@ -72,14 +75,13 @@ if [ "$GITHUB_ACTIONS" == "true" ]; then
 	if [ -n "$GITHUB_JOB_CANCELLED_EMOJI" ]; then
 		STATUS_EMOJI_CANCELLED="$GITHUB_JOB_CANCELLED_EMOJI"
 	fi
-fi
 
 ############
 # Drone ci #
 ############
 
 # https://docs.drone.io/pipeline/environment/reference/
-if [ "$DRONE" == "true" ]; then
+elif [ "$DRONE" == "true" ]; then
 	export GIT_COMMIT_MESSAGE="$DRONE_COMMIT_MESSAGE"
 	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_COMMITTER_USERNAME="$DRONE_COMMIT_AUTHOR"
@@ -287,16 +289,19 @@ function default_notify_line() {
 	exec 3>&1
 	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
 	if ((http_status > 399)); then
-		die "Line api returned http code: ${http_status}"
+		err "Line api returned http code: ${http_status}"
 	fi
 }
 if [ -n "${!K_LINE_CHANNEL_ACCESS_TOKEN}" ] && [ -n "${!K_LINE_TO}" ]; then
-	log "\$$K_LINE_CHANNEL_ACCESS_TOKEN \$LINE_TO detected, run default line notifying."
+	log "\$$K_LINE_CHANNEL_ACCESS_TOKEN \$$K_LINE_TO detected, run default line notifying."
 	__count=$((__count + 1))
 	default_notify_line
 fi
 
 # final handler
 if [[ "$__count" -eq 0 ]]; then
-	die "No any ENV Specified, nothing send."
+	err "No any ENV Specified, nothing send."
+fi
+if [[ "$__err" -ne 0 ]]; then
+	exit 1
 fi
