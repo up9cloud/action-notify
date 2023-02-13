@@ -145,6 +145,10 @@ Platform related:
     - *Default value*: `./template/discord/${TEMPLATE}.json`
   - `DISCORD_WEBHOOK_URL`: Get it from `Edit Channel -> Integrations -> Webhooks`
     - **Required if** want to notify discord via webhook
+  - `DISCORD_BOT_TOKEN`: Get it from [Developer Applications](https://discord.com/developers/applications) -> `New Application (or choose existing) -> Bot -> Token`
+    - **Required if** want to notify discord via bot
+  - `DISCORD_CHANNEL_ID`: First, enable Developer Mode [`Settings -> Advanced -> Developer Mode`], then copy channel ID [`Right mouse click on needed channel -> Copy ID`]. Also, you can find ID in browser app url
+    - **Required if** want to notify discord via bot
 - `Line`
   - `LINE_TEMPLATE_PATH`: Line.me template file path
     - *Default value*: `./template/line.me/${TEMPLATE}.json`

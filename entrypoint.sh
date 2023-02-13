@@ -25,6 +25,8 @@ function setup_keys() {
 	K_SLACK_CHANNEL="${prefix}SLACK_CHANNEL"
 	K_DISCORD_TEMPLATE_PATH="${prefix}DISCORD_TEMPLATE_PATH"
 	K_DISCORD_WEBHOOK_URL="${prefix}DISCORD_WEBHOOK_URL"
+	K_DISCORD_BOT_TOKEN="${prefix}DISCORD_BOT_TOKEN"
+	K_DISCORD_CHANNEL_ID="${prefix}DISCORD_CHANNEL_ID"
 	K_LINE_TEMPLATE_PATH="${prefix}LINE_TEMPLATE_PATH"
 	K_LINE_CHANNEL_ACCESS_TOKEN="${prefix}LINE_CHANNEL_ACCESS_TOKEN"
 	K_LINE_TO="${prefix}LINE_TO"
@@ -284,6 +286,17 @@ if [ -n "${!K_DISCORD_WEBHOOK_URL}" ]; then
 	log "\$$K_DISCORD_WEBHOOK_URL detected, run default discord (webhook) notifying."
 	__count=$((__count + 1))
 	default_notify_discord_via_webhook
+fi
+function default_notify_discord_via_bot() {
+	local parsed_file=$(mktemp)
+	cat "${!K_DISCORD_TEMPLATE_PATH}" | envsubst >$parsed_file
+	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v7/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
+	eval "$cmd"
+}
+if [ -n "${!K_DISCORD_BOT_TOKEN}" ] && [ -n "${!K_DISCORD_CHANNEL_ID}" ]; then
+	log "\$$K_DISCORD_BOT_TOKEN and \$$K_DISCORD_CHANNEL_ID detected, run default discord (bot) notifying."
+	__count=$((__count + 1))
+	default_notify_discord_via_bot
 fi
 
 function default_notify_line() {
