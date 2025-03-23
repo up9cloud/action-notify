@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Telegram notify
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -29,7 +29,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TELEGRAM_PARSE_MODE: md
-      - name: Built in template
+      - name: Built in template style
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -37,7 +37,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
           TEMPLATE: debug
-      - name: Custom template
+      - name: Custom template path
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -48,6 +48,17 @@ jobs:
           TELEGRAM_TEMPLATE_PATH: "./test/telegram/custom.txt"
           CUSTOM_VAR1: ${{github.repository_owner}}
           CUSTOM_VAR2: "a custom variable"
+      - name: Custom template content
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+          TELEGRAM_TEMPLATE_CONTENT: |
+            Run number: ${GITHUB_RUN_NUMBER}
+            Repo owner: ${CUSTOM_VAR1}
+          CUSTOM_VAR1: ${{github.repository_owner}}
       - name: Custom script
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -62,21 +73,21 @@ jobs:
     runs-on: ubuntu-latest
     name: Slack notify via webhook
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Built in template
+      - name: Built in template style
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEMPLATE: debug
-      - name: Custom template
+      - name: Custom template path
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -85,6 +96,17 @@ jobs:
           SLACK_TEMPLATE_PATH: "./test/slack/custom.json"
           CUSTOM_VAR1: ${{github.repository_owner}}
           CUSTOM_VAR2: "a custom variable"
+      - name: Custom template content
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_TEMPLATE_CONTENT: |
+            {
+              "text": "Run number: ${GITHUB_RUN_NUMBER}\nRepo owner: ${CUSTOM_VAR1}"
+            }
+          CUSTOM_VAR1: ${{github.repository_owner}}
       - name: Custom script
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -122,7 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Slack notify via api
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -134,7 +156,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Discord notify via webhook
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Default
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -145,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Line.me notify
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Notify single id
         uses: up9cloud/action-notify@master
         if: cancelled() == false
@@ -161,7 +183,7 @@ jobs:
       #     GITHUB_JOB_STATUS: ${{ job.status }}
       #     LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
       #     LINE_TO: ${{ secrets.LINE_TO_MULTI }}
-      - name: Built in template
+      - name: Built in template style
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -215,7 +237,7 @@ jobs:
             echo "::set-output name=status::failure"
             exit 2
           fi
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:

@@ -121,6 +121,7 @@ Platform related:
 - `Telegram`
   - `TELEGRAM_TEMPLATE_PATH`: Telegram template file path
     - *Default value*: `./template/telegram/${TEMPLATE}.${TELEGRAM_PARSE_MODE}`
+  - `TELEGRAM_TEMPLATE_CONTENT`: Telegram template content. If set, it will ignore the `TELEGRAM_TEMPLATE_PATH`
   - `TELEGRAM_BOT_TOKEN`: Get it from [@BotFather](https://telegram.me/BotFather)
     - **Required if** want to notify telegram
     - e.q. 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
@@ -132,6 +133,7 @@ Platform related:
 - `Slack`
   - `SLACK_TEMPLATE_PATH`: Slack template file path
     - *Default value*: `./template/slack/${TEMPLATE}.json`
+  - `SLACK_TEMPLATE_CONTENT`: Slack template content. If set, it will ignore the `SLACK_TEMPLATE_PATH`
   - `SLACK_WEBHOOK_URL`: Get it from `Incoming WebHooks` app
     - **Required if** want to notify slack via webhook
     - e.q. `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX`
@@ -143,11 +145,13 @@ Platform related:
 - `Discord`
   - `DISCORD_TEMPLATE_PATH`: Discord template file path
     - *Default value*: `./template/discord/${TEMPLATE}.json`
+  - `DISCORD_TEMPLATE_CONTENT`: Discord template content. If set, it will ignore the `DISCORD_TEMPLATE_PATH`
   - `DISCORD_WEBHOOK_URL`: Get it from `Edit Channel -> Integrations -> Webhooks`
     - **Required if** want to notify discord via webhook
 - `Line`
   - `LINE_TEMPLATE_PATH`: Line.me template file path
     - *Default value*: `./template/line.me/${TEMPLATE}.json`
+  - `LINE_TEMPLATE_CONTENT`: Line.me template content. If set, it will ignore the `LINE_TEMPLATE_PATH`
   - `LINE_CHANNEL_ACCESS_TOKEN`: Get it from Developer console -> Bot -> `Messaging api -> Channel access token (long-lived)`
     - **Required if** want to notify line.me
   - `LINE_TO`: The user id, group id or chat id. Get it from webhook objects (have to build your server to receive objects)
