@@ -307,7 +307,11 @@ function default_notify_discord_via_bot() {
 	local parsed_file=$(mktemp)
 	cat "${!K_DISCORD_TEMPLATE_PATH}" | envsubst >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v9/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
-	eval "$cmd"
+	exec 3>&1
+	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
+	if ((http_status > 399)); then
+		err "Discord api returned http code: ${http_status}"
+	fi
 }
 if [ -n "${!K_DISCORD_BOT_TOKEN}" ] && [ -n "${!K_DISCORD_CHANNEL_ID}" ]; then
 	log "\$$K_DISCORD_BOT_TOKEN and \$$K_DISCORD_CHANNEL_ID detected, run default discord (bot) notifying."

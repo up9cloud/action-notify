@@ -148,7 +148,7 @@ Platform related:
   - `DISCORD_TEMPLATE_CONTENT`: Discord template content. If set, it will ignore the `DISCORD_TEMPLATE_PATH`
   - `DISCORD_WEBHOOK_URL`: Get it from `Edit Channel -> Integrations -> Webhooks`
     - **Required if** want to notify discord via webhook
-  - `DISCORD_BOT_TOKEN`: Get it from [Developer Applications](https://discord.com/developers/applications) -> `New Application (or choose existing) -> Bot -> Token`
+  - `DISCORD_BOT_TOKEN`: Get it from [Developer Applications](https://discord.com/developers/applications) -> `New Application (or choose existing) -> Bot -> Token`. Also need to add application (bot) to your server: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=0&scope=bot%20applications.commands` (Get client_id from [Developer Applications](https://discord.com/developers/applications) -> choose the application -> OAuth2 -> CLIENT ID)
     - **Required if** want to notify discord via bot
   - `DISCORD_CHANNEL_ID`: First, enable Developer Mode [`User Settings -> Advanced -> Developer Mode`], then copy channel ID [`Right mouse click on needed channel -> Copy ID`]. Also, you can find ID in browser app url (e.q. `https://discord.com/channels/.../<channel id>`)
     - **Required if** want to notify discord via bot
