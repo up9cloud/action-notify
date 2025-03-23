@@ -128,6 +128,7 @@ Platform related:
   - `TELEGRAM_CHAT_ID`: First sending messages to bot, then get it from `https://api.telegram.org/bot<token>/getUpdates`
     - **Required if** want to notify telegram
     - e.q. -123456789
+  - `TELEGRAM_MESSAGE_THREAD_ID`: The topic ID, obtainable from `/getUpdates` `message_thread_id`
   - `TELEGRAM_PARSE_MODE`: `txt`, `md` or `html`. This will map to telegram [formatting options](https://core.telegram.org/bots/api#formatting-options)
     - *Default value*: `txt`
 - `Slack`

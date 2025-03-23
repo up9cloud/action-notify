@@ -13,6 +13,14 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+      - name: Send to topic
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_GROUP_ID}}
+          TELEGRAM_MESSAGE_THREAD_ID: ${{secrets.TELEGRAM_MESSAGE_THREAD_ID}}
       - name: Parse mode (html)
         uses: up9cloud/action-notify@master
         if: cancelled() == false

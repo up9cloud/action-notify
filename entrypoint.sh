@@ -19,6 +19,7 @@ function setup_keys() {
 	K_TELEGRAM_TEMPLATE_CONTENT="${prefix}TELEGRAM_TEMPLATE_CONTENT"
 	K_TELEGRAM_BOT_TOKEN="${prefix}TELEGRAM_BOT_TOKEN"
 	K_TELEGRAM_CHAT_ID="${prefix}TELEGRAM_CHAT_ID"
+	K_TELEGRAM_MESSAGE_THREAD_ID="${prefix}TELEGRAM_MESSAGE_THREAD_ID"
 	K_TELEGRAM_PARSE_MODE="${prefix}TELEGRAM_PARSE_MODE"
 	K_SLACK_TEMPLATE_PATH="${prefix}SLACK_TEMPLATE_PATH"
 	K_SLACK_TEMPLATE_CONTENT="${prefix}SLACK_TEMPLATE_CONTENT"
@@ -257,6 +258,9 @@ __count=0
 
 function default_notify_telegram() {
 	local arg_p=""
+	if [ -n "${!K_TELEGRAM_MESSAGE_THREAD_ID}" ]; then
+		arg_p=" --message-thread-id ${!K_TELEGRAM_MESSAGE_THREAD_ID}"
+	fi
 	if [ -n "${!K_TELEGRAM_PARSE_MODE}" ]; then
 		arg_p=" -p ${!K_TELEGRAM_PARSE_MODE}"
 	fi
@@ -327,7 +331,7 @@ function default_notify_line() {
 		LINE_TO_JSON=$(echo -en "${!K_LINE_TO}" | jq --raw-input --slurp 'split(",")')
 		mode=multicast
 	fi
-	# the default template use GIT_COMMIT_MESSAGE_ESCAPED, line don't allow empty text
+	# The default template uses GIT_COMMIT_MESSAGE_ESCAPED, but it could be empty text, which is not allowed by Line
 	local empty_message=false
 	if [ -z "${GIT_COMMIT_MESSAGE_ESCAPED}" ]; then
 		empty_message=true
