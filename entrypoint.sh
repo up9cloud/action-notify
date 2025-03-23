@@ -208,7 +208,7 @@ function set_default_telegram_template_path() {
 }
 if [ -n "${!K_TELEGRAM_TEMPLATE_CONTENT}" ]; then
 	TELEGRAM_TEMPLATE_PATH=$(mktemp)
-	cat "${!K_TELEGRAM_TEMPLATE_CONTENT}" > $TELEGRAM_TEMPLATE_PATH
+	echo -n "${!K_TELEGRAM_TEMPLATE_CONTENT}" > $TELEGRAM_TEMPLATE_PATH
 elif [ -z "${!K_TELEGRAM_TEMPLATE_PATH}" ]; then
 	set_default_telegram_template_path
 else
@@ -216,7 +216,7 @@ else
 fi
 if [ -n "${!K_SLACK_TEMPLATE_CONTENT}" ]; then
 	SLACK_TEMPLATE_PATH=$(mktemp)
-	cat "${!K_SLACK_TEMPLATE_CONTENT}" > $SLACK_TEMPLATE_PATH
+	echo -n "${!K_SLACK_TEMPLATE_CONTENT}" > $SLACK_TEMPLATE_PATH
 elif [ -z "${!K_SLACK_TEMPLATE_PATH}" ]; then
 	SLACK_TEMPLATE_PATH="/template/slack/${TEMPLATE}.json"
 else
@@ -224,7 +224,7 @@ else
 fi
 if [ -n "${!K_DISCORD_TEMPLATE_CONTENT}" ]; then
 	DISCORD_TEMPLATE_PATH=$(mktemp)
-	cat "${!K_DISCORD_TEMPLATE_CONTENT}" > $DISCORD_TEMPLATE_PATH
+	echo -n "${!K_DISCORD_TEMPLATE_CONTENT}" > $DISCORD_TEMPLATE_PATH
 elif [ -z "${!K_DISCORD_TEMPLATE_PATH}" ]; then
 	DISCORD_TEMPLATE_PATH="/template/discord/${TEMPLATE}.json"
 else
@@ -232,7 +232,7 @@ else
 fi
 if [ -n "${!K_LINE_TEMPLATE_CONTENT}" ]; then
 	LINE_TEMPLATE_PATH=$(mktemp)
-	cat "${!K_LINE_TEMPLATE_CONTENT}" > $LINE_TEMPLATE_PATH
+	echo -n "${!K_LINE_TEMPLATE_CONTENT}" > $LINE_TEMPLATE_PATH
 elif [ -z "${!K_LINE_TEMPLATE_PATH}" ]; then
 	LINE_TEMPLATE_PATH="/template/line.me/${TEMPLATE}.json"
 else
