@@ -306,7 +306,7 @@ fi
 function default_notify_discord_via_bot() {
 	local parsed_file=$(mktemp)
 	cat "${!K_DISCORD_TEMPLATE_PATH}" | envsubst >$parsed_file
-	local cmd=$(printf 'curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v10/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
+	local cmd=$(printf 'curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v9/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
 	eval "$cmd"
 }
 if [ -n "${!K_DISCORD_BOT_TOKEN}" ] && [ -n "${!K_DISCORD_CHANNEL_ID}" ]; then
