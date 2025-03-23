@@ -327,7 +327,16 @@ function default_notify_line() {
 		LINE_TO_JSON=$(echo -en "${!K_LINE_TO}" | jq --raw-input --slurp 'split(",")')
 		mode=multicast
 	fi
+	# the default template use GIT_COMMIT_MESSAGE_ESCAPED, line don't allow empty text
+	local empty_message=false
+	if [ -z "${GIT_COMMIT_MESSAGE_ESCAPED}" ]; then
+		empty_message=true
+		GIT_COMMIT_MESSAGE_ESCAPED=" "
+	fi
 	cat "${!K_LINE_TEMPLATE_PATH}" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
+	if [ "$empty_message" == "true" ]; then
+		GIT_COMMIT_MESSAGE_ESCAPED=""
+	fi
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer %s" --data @"%s" "https://api.line.me/v2/bot/message/%s"' "${!K_LINE_CHANNEL_ACCESS_TOKEN}" "$parsed_file" "$mode")
 	exec 3>&1
 	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
