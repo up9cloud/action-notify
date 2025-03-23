@@ -163,6 +163,18 @@ jobs:
         env:
           GITHUB_JOB_STATUS: ${{ job.status }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  discord_bot:
+    runs-on: ubuntu-latest
+    name: Discord notify via bot
+    steps:
+      - uses: actions/checkout@v4
+      - name: Default
+        uses: up9cloud/action-notify@master
+        if: cancelled() == false
+        env:
+          GITHUB_JOB_STATUS: ${{ job.status }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
   line:
     runs-on: ubuntu-latest
     name: Line.me notify
