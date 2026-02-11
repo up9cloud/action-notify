@@ -23,7 +23,7 @@ Send notifications all in one.
 > GitHub Action
 
 ```yml
-# It won't work on `pull_request`, github won't pass secrets.xxx for the workflow triggered by pull request
+# This won't work on `pull_request` events because GitHub does not provide secrets (secrets.xxx) to workflows triggered by pull requests.
 on: [push]
 jobs:
   deploy:
@@ -38,7 +38,7 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-  # Or you could use this as standalone job:
+  # If you don't want to include it in the same steps, you can use it as a separate job like this:
   notify:
     if: cancelled() == false
     needs: deploy
@@ -88,7 +88,7 @@ Custom var: ${CUSTOM_VAR2}
 Custom var in drone plugin settings: ${PLUGIN_CUSTOM_VAR2}
 ```
 
-See more template examples: `./template/**/*`
+See more examples in: `./template/**/*`
 
 ## Env variables
 
@@ -159,11 +159,11 @@ Platform related:
   - `LINE_TEMPLATE_CONTENT`: Line.me template content. If set, it will ignore the `LINE_TEMPLATE_PATH`
   - `LINE_CHANNEL_ACCESS_TOKEN`: Get it from Developer console -> Bot -> `Messaging api -> Channel access token (long-lived)`
     - **Required if** want to notify line.me
-  - `LINE_TO`: The user id, group id or chat id. Get it from webhook objects (have to build your server to receive objects)
+  - `LINE_TO`: The user ID, group ID, or chat ID of the recipient. Obtain this value from webhook payloads (you need to set up your own webhook server to receive and extract it).
     - **Required if** want to notify line.me
     - It can be multiple ids
-      - Must be `user`s, if you want to notify mixed ids with group or chat id, you `have` to trigger this action one by one.
-      - Using `,` to separate each id, e.q.
+      - All IDs must be `user` IDs; if you need to notify a mix of user, group, or chat IDs, you must run this action separately one by one.
+      - Separate multiple IDs with a comma, e.g.
 
       ```yml
       env:
