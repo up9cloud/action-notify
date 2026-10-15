@@ -183,6 +183,8 @@ Template related
   - Drone CI: same as DRONE_COMMIT_MESSAGE
 - `GIT_COMMIT_MESSAGE_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
   - e.q. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
+- `GIT_COMMIT_MESSAGE_HTML_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but with `&`, `<`, `>` escaped, can be safely used in HTML template
+  - e.q. `<pre>${GIT_COMMIT_MESSAGE_HTML_ESCAPED}</pre>`
 - `GIT_COMMITTER_USERNAME`
   - GitHub Action: event's value `.commits[-1].committer.username`, `.workflow_run.head_commit.committer.name`
   - Drone CI: same as DRONE_COMMIT_AUTHOR

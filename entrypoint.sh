@@ -106,6 +106,7 @@ elif [ "$DRONE" == "true" ]; then
 
 	setup_keys PLUGIN_
 fi
+export GIT_COMMIT_MESSAGE_HTML_ESCAPED=$(printf '%s' "$GIT_COMMIT_MESSAGE" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
 
 ################
 # Setup status #

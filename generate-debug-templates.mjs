@@ -12,13 +12,19 @@ for (const s of raw.split('\n')) {
   envs.push(s)
 }
 const expressions = envs.map(s => `${s}: \${${s}}`)
+// The raw commit message breaks JSON and HTML, so those show the escaped form for that format instead
+const safeExpressions = (messageVar, unsafeVar) => envs
+  .filter(s => s !== unsafeVar)
+  .map(s => `${s}: \${${s === 'GIT_COMMIT_MESSAGE' ? messageVar : s}}`)
+const jsonExpressions = safeExpressions('GIT_COMMIT_MESSAGE_ESCAPED', 'GIT_COMMIT_MESSAGE_HTML_ESCAPED')
+const htmlExpressions = safeExpressions('GIT_COMMIT_MESSAGE_HTML_ESCAPED', 'GIT_COMMIT_MESSAGE_ESCAPED')
 let jobs = []
 jobs.push(
 fs.writeFile(path.join(templateDir, 'discord', 'debug.json'), `{
   "tts": false,
   "embeds": [
     {
-      "description": "\`\`\`${expressions.join('\\n')}\`\`\`"
+      "description": "\`\`\`${jsonExpressions.join('\\n')}\`\`\`"
     }
   ]
 }`),
@@ -26,7 +32,7 @@ fs.writeFile(path.join(templateDir, 'line.me', 'debug.json'), `{
   "messages":[
     {
       "type":"text",
-      "text":"${expressions.join('\\n')}"
+      "text":"${jsonExpressions.join('\\n')}"
     }
   ]
 }`),
@@ -36,16 +42,16 @@ fs.writeFile(path.join(templateDir, 'slack', 'debug.json'), `{
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "\`\`\`${expressions.join('\\n')}\`\`\`"
+        "text": "\`\`\`${jsonExpressions.join('\\n')}\`\`\`"
       }
     }
   ]
 }`),
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.html'), `<pre><code>
-${expressions.join('\n')}
+${htmlExpressions.join('\n')}
 </code></pre>`),
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.HTML.html'), `<pre><code>
-${expressions.join('\n')}
+${htmlExpressions.join('\n')}
 </code></pre>`),
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.md'), `\`\`\`
 ${expressions.join('\n')}
