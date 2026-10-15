@@ -120,7 +120,7 @@ Platform related:
 
 - `Telegram`
   - `TELEGRAM_TEMPLATE_PATH`: Telegram template file path
-    - *Default value*: `./template/telegram/${TEMPLATE}.${TELEGRAM_PARSE_MODE}`
+    - *Default value*: `./template/telegram/${TEMPLATE}.<ext>`, `<ext>` by `TELEGRAM_PARSE_MODE`: `md` → `md`, `html` → `html`, `MarkdownV2` → `MarkdownV2.md`, `HTML` → `HTML.html`, anything else → `txt`
   - `TELEGRAM_TEMPLATE_CONTENT`: Telegram template content. If set, it will ignore the `TELEGRAM_TEMPLATE_PATH`
   - `TELEGRAM_BOT_TOKEN`: Get it from [@BotFather](https://telegram.me/BotFather)
     - **Required if** want to notify telegram
@@ -129,8 +129,8 @@ Platform related:
     - **Required if** want to notify telegram
     - e.q. -123456789
   - `TELEGRAM_MESSAGE_THREAD_ID`: The topic ID, obtainable from `/getUpdates` `message_thread_id`
-  - `TELEGRAM_PARSE_MODE`: `txt`, `md` or `html`. This will map to telegram [formatting options](https://core.telegram.org/bots/api#formatting-options)
-    - *Default value*: `txt`
+  - `TELEGRAM_PARSE_MODE`: passed to [tg.ash](https://github.com/up9cloud/telegram-bot-send.sh) `--parse-mode`: `text`, `md`, `html`, `code`, `MarkdownV2` or `HTML`. `md` and `html` use the rich message API, `MarkdownV2` and `HTML` the classic [formatting options](https://core.telegram.org/bots/api#formatting-options). `txt` is an alias of `text`
+    - *Default value*: `text`
 - `Slack`
   - `SLACK_TEMPLATE_PATH`: Slack template file path
     - *Default value*: `./template/slack/${TEMPLATE}.json`

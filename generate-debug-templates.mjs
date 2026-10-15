@@ -44,7 +44,13 @@ fs.writeFile(path.join(templateDir, 'slack', 'debug.json'), `{
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.html'), `<pre><code>
 ${expressions.join('\n')}
 </code></pre>`),
+fs.writeFile(path.join(templateDir, 'telegram', 'debug.HTML.html'), `<pre><code>
+${expressions.join('\n')}
+</code></pre>`),
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.md'), `\`\`\`
+${expressions.join('\n')}
+\`\`\``),
+fs.writeFile(path.join(templateDir, 'telegram', 'debug.MarkdownV2.md'), `\`\`\`
 ${expressions.join('\n')}
 \`\`\``),
 fs.writeFile(path.join(templateDir, 'telegram', 'debug.txt'), expressions.join('\n')),

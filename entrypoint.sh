@@ -194,17 +194,21 @@ if [ -z "${!K_TEMPLATE}" ]; then
 		TEMPLATE=default.drone
 	fi
 fi
+TELEGRAM_PARSE_MODE="${!K_TELEGRAM_PARSE_MODE}"
+if [ "$TELEGRAM_PARSE_MODE" == "txt" ]; then
+	TELEGRAM_PARSE_MODE=text
+fi
 function set_default_telegram_template_path() {
 	local ext=txt
-	case "${!K_TELEGRAM_PARSE_MODE}" in
-	html | md)
-		ext=${!K_TELEGRAM_PARSE_MODE}
+	case "$TELEGRAM_PARSE_MODE" in
+	md | html)
+		ext=$TELEGRAM_PARSE_MODE
 		;;
 	HTML)
-		ext=html
+		ext=HTML.html
 		;;
-	markdown | Markdown | MarkdownV2)
-		ext=md
+	MarkdownV2)
+		ext=MarkdownV2.md
 		;;
 	esac
 	TELEGRAM_TEMPLATE_PATH="/template/telegram/${TEMPLATE}.${ext}"
@@ -261,8 +265,8 @@ function default_notify_telegram() {
 	if [ -n "${!K_TELEGRAM_MESSAGE_THREAD_ID}" ]; then
 		arg_p=" --message-thread-id ${!K_TELEGRAM_MESSAGE_THREAD_ID}"
 	fi
-	if [ -n "${!K_TELEGRAM_PARSE_MODE}" ]; then
-		arg_p=" -p ${!K_TELEGRAM_PARSE_MODE}"
+	if [ -n "$TELEGRAM_PARSE_MODE" ]; then
+		arg_p+=" -p ${TELEGRAM_PARSE_MODE}"
 	fi
 	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "${!K_TELEGRAM_TEMPLATE_PATH}" "$arg_p")
 	eval "$cmd"
