@@ -2,7 +2,7 @@
 
 __err=0
 function log() {
-	if [ "$VERBOSE" == "true" ]; then
+	if [ "${!K_VERBOSE}" == "true" ]; then
 		printf '[action-notify] %s\n' "$@"
 	fi
 }
@@ -50,28 +50,37 @@ function setup_keys() {
 
 # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
 if [ "$GITHUB_ACTIONS" == "true" ]; then
+	setup_keys
+
 	# https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
+	# `// empty`: events without commits (pull_request, schedule, ...) would otherwise yield the string "null"
+	function event() {
+		if [ -f "$GITHUB_EVENT_PATH" ]; then
+			jq -cr "$1 // empty" "$GITHUB_EVENT_PATH"
+		fi
+	}
 	log "Github event (${GITHUB_EVENT_PATH}):"
-	log "$(cat $GITHUB_EVENT_PATH)"
-	if [ $(cat "$GITHUB_EVENT_PATH" | jq 'has("workflow_run")') == "true" ]; then
-		export GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.message || printf '')
-		export GIT_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .workflow_run.head_commit.committer.name || printf '')
+	log "$(event .)"
+	if [ "$(event 'has("workflow_run")')" == "true" ]; then
+		export GIT_COMMIT_MESSAGE=$(event '.workflow_run.head_commit.message')
+		export GIT_COMMITTER_USERNAME=$(event '.workflow_run.head_commit.committer.name')
 	else
-		export GIT_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[-1].message || printf '')
-		export GIT_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .commits[-1].committer.username || printf '')
+		export GIT_COMMIT_MESSAGE=$(event '.commits[-1].message // .pull_request.title')
+		export GIT_COMMITTER_USERNAME=$(event '.commits[-1].committer.username')
 
 		# backward compatible
-		export GIT_HEAD_COMMIT_MESSAGE=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.message || printf '')
-		export GIT_HEAD_COMMITTER_USERNAME=$(cat "$GITHUB_EVENT_PATH" | jq -cr .head_commit.committer.username || printf '')
+		export GIT_HEAD_COMMIT_MESSAGE=$(event '.head_commit.message')
+		export GIT_HEAD_COMMITTER_USERNAME=$(event '.head_commit.committer.username')
 	fi
-	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
+	if [ -z "$GIT_COMMITTER_USERNAME" ]; then
+		export GIT_COMMITTER_USERNAME="$GITHUB_ACTOR"
+	fi
+	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf '%s' "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_SHA_SHORT=$(echo "$GITHUB_SHA" | cut -c1-8)
-
-	setup_keys
 
 	# backward compatible
 	export GIT_HEAD_COMMIT_MESSAGE="$GIT_COMMIT_MESSAGE"
-	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
+	export GIT_HEAD_COMMIT_MESSAGE_ESCAPED=$(printf '%s' "$GIT_HEAD_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_HEAD_COMMITTER_USERNAME="$GIT_COMMITTER_USERNAME"
 	export GITHUB_SHA_SHORT="$GIT_SHA_SHORT"
 	if [ -n "$GITHUB_JOB_SUCCESS_COLOR" ]; then
@@ -100,11 +109,13 @@ if [ "$GITHUB_ACTIONS" == "true" ]; then
 # https://docs.drone.io/pipeline/environment/reference/
 elif [ "$DRONE" == "true" ]; then
 	export GIT_COMMIT_MESSAGE="$DRONE_COMMIT_MESSAGE"
-	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
+	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf '%s' "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_COMMITTER_USERNAME="$DRONE_COMMIT_AUTHOR"
 	export GIT_SHA_SHORT=$(echo "$DRONE_COMMIT_SHA" | cut -c1-8)
 
 	setup_keys PLUGIN_
+else
+	setup_keys
 fi
 export GIT_COMMIT_MESSAGE_HTML_ESCAPED=$(printf '%s' "$GIT_COMMIT_MESSAGE" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
 
@@ -138,6 +149,10 @@ function set_status_color() {
 		fi
 		;;
 	esac
+	if [[ ! "$color" =~ ^#[0-9a-fA-F]{6}$ ]]; then
+		printf '[action-notify] invalid status color "%s", fallback to #ffffff\n' "$color" 1>&2
+		color="#ffffff"
+	fi
 	export STATUS_COLOR="$color"
 	export STATUS_COLOR_DECIMAL="$((16${STATUS_COLOR}))"
 
@@ -262,16 +277,24 @@ fi
 #####################
 __count=0
 
+function print_response() {
+	cat "$1"
+	if [ -n "$(tail -c1 "$1")" ]; then
+		echo
+	fi
+}
+
 function default_notify_telegram() {
-	local arg_p=""
+	local args=(-q)
 	if [ -n "${!K_TELEGRAM_MESSAGE_THREAD_ID}" ]; then
-		arg_p=" --message-thread-id ${!K_TELEGRAM_MESSAGE_THREAD_ID}"
+		args+=(--message-thread-id "${!K_TELEGRAM_MESSAGE_THREAD_ID}")
 	fi
 	if [ -n "$TELEGRAM_PARSE_MODE" ]; then
-		arg_p+=" -p ${TELEGRAM_PARSE_MODE}"
+		args+=(-p "$TELEGRAM_PARSE_MODE")
 	fi
-	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
-	eval "$cmd"
+	if ! envsubst <"$TELEGRAM_TEMPLATE_PATH" | tg "${args[@]}"; then
+		err "Telegram notifying failed."
+	fi
 }
 if [ -n "${!K_TELEGRAM_BOT_TOKEN}" ] && [ -n "${!K_TELEGRAM_CHAT_ID}" ]; then
 	log "\$$K_TELEGRAM_BOT_TOKEN \$$K_TELEGRAM_CHAT_ID detected, run default telegram notifying."
@@ -282,18 +305,29 @@ fi
 function default_notify_slack_via_webhook() {
 	local parsed_file=$(mktemp)
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
-	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "${!K_SLACK_WEBHOOK_URL}")
-	eval "$cmd"
+	local res_file=$(mktemp)
+	local http_status=$(curl -sSL -X POST -H "content-type: application/json" --data @"$parsed_file" -w '%{http_code}' -o "$res_file" "${!K_SLACK_WEBHOOK_URL}")
+	print_response "$res_file"
+	if ((${http_status:-0} < 200 || ${http_status:-0} > 299)); then
+		err "Slack webhook returned http code: ${http_status}"
+	fi
 }
 function default_notify_slack_via_api() {
 	local parsed_file=$(mktemp)
 	local url=https://slack.com/api/chat.postMessage
 	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
-	local cmd=$(printf 'curl -sSL -X POST -H "authorization: Bearer %s" -H "content-type: application/json; charset=UTF-8" --data @"%s" "%s"' "${!K_SLACK_API_TOKEN}" "$parsed_file" "$url")
-	eval "$cmd"
+	local res_file=$(mktemp)
+	local http_status=$(curl -sSL -X POST -H "authorization: Bearer ${!K_SLACK_API_TOKEN}" -H "content-type: application/json; charset=UTF-8" --data @"$parsed_file" -w '%{http_code}' -o "$res_file" "$url")
+	print_response "$res_file"
+	# Slack api answers http 200 with {"ok":false} on errors
+	if ((${http_status:-0} < 200 || ${http_status:-0} > 299)); then
+		err "Slack api returned http code: ${http_status}"
+	elif [ "$(jq -r .ok "$res_file" 2>/dev/null)" != "true" ]; then
+		err "Slack api returned error: $(jq -r '.error // empty' "$res_file" 2>/dev/null)"
+	fi
 }
 if [ -n "${!K_SLACK_WEBHOOK_URL}" ]; then
-	log "\$$_K_SLACK_WEBHOOK_URL detected, run default slack (webhook) notifying."
+	log "\$$K_SLACK_WEBHOOK_URL detected, run default slack (webhook) notifying."
 	__count=$((__count + 1))
 	default_notify_slack_via_webhook
 elif [ -n "${!K_SLACK_API_TOKEN}" ] && [ -n "${!K_SLACK_CHANNEL}" ]; then
@@ -305,8 +339,12 @@ fi
 function default_notify_discord_via_webhook() {
 	local parsed_file=$(mktemp)
 	cat "$DISCORD_TEMPLATE_PATH" | envsubst >$parsed_file
-	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "${!K_DISCORD_WEBHOOK_URL}")
-	eval "$cmd"
+	local res_file=$(mktemp)
+	local http_status=$(curl -sSL -X POST -H "content-type: application/json" --data @"$parsed_file" -w '%{http_code}' -o "$res_file" "${!K_DISCORD_WEBHOOK_URL}")
+	print_response "$res_file"
+	if ((${http_status:-0} < 200 || ${http_status:-0} > 299)); then
+		err "Discord webhook returned http code: ${http_status}"
+	fi
 }
 if [ -n "${!K_DISCORD_WEBHOOK_URL}" ]; then
 	log "\$$K_DISCORD_WEBHOOK_URL detected, run default discord (webhook) notifying."
@@ -316,10 +354,10 @@ fi
 function default_notify_discord_via_bot() {
 	local parsed_file=$(mktemp)
 	cat "$DISCORD_TEMPLATE_PATH" | envsubst >$parsed_file
-	local cmd=$(printf 'curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v9/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
-	exec 3>&1
-	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
-	if ((http_status > 399)); then
+	local res_file=$(mktemp)
+	local http_status=$(curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot ${!K_DISCORD_BOT_TOKEN}" --data @"$parsed_file" -w '%{http_code}' -o "$res_file" "https://discord.com/api/v10/channels/${!K_DISCORD_CHANNEL_ID}/messages")
+	print_response "$res_file"
+	if ((${http_status:-0} < 200 || ${http_status:-0} > 299)); then
 		err "Discord api returned http code: ${http_status}"
 	fi
 }
@@ -347,10 +385,10 @@ function default_notify_line() {
 	if [ "$empty_message" == "true" ]; then
 		GIT_COMMIT_MESSAGE_ESCAPED=""
 	fi
-	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer %s" --data @"%s" "https://api.line.me/v2/bot/message/%s"' "${!K_LINE_CHANNEL_ACCESS_TOKEN}" "$parsed_file" "$mode")
-	exec 3>&1
-	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
-	if ((http_status > 399)); then
+	local res_file=$(mktemp)
+	local http_status=$(curl -sSL -X POST -H "content-type: application/json" -H "Authorization: Bearer ${!K_LINE_CHANNEL_ACCESS_TOKEN}" --data @"$parsed_file" -w '%{http_code}' -o "$res_file" "https://api.line.me/v2/bot/message/${mode}")
+	print_response "$res_file"
+	if ((${http_status:-0} < 200 || ${http_status:-0} > 299)); then
 		err "Line api returned http code: ${http_status}"
 	fi
 }
@@ -362,7 +400,7 @@ fi
 
 # final handler
 if [[ "$__count" -eq 0 ]]; then
-	err "No any ENV Specified, nothing send."
+	err "No notifier configured; nothing sent."
 fi
 if [[ "$__err" -ne 0 ]]; then
 	exit 1

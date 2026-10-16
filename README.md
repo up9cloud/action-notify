@@ -8,7 +8,7 @@ Send notifications all in one.
   - [x] via [chat.postMessage](https://api.slack.com/methods/chat.postMessage) api.
 - Discord
   - [x] via [Webhooks](https://discord.com/developers/docs/resources/webhook#execute-webhook)
-  - [ ] via [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
+  - [x] via [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
 - [ ] Teams
 - [ ] Gitter
 - [x] Line
@@ -23,15 +23,16 @@ Send notifications all in one.
 > GitHub Action
 
 ```yml
-# This won't work on `pull_request` events because GitHub does not provide secrets (secrets.xxx) to workflows triggered by pull requests.
+# Pull requests from forks don't get secrets (secrets.xxx), so this won't work for them.
 on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Notify telegram
-        # You could use master version, but it's recommended to use [latest release version](https://github.com/marketplace/actions/action-notify) instead.
+        # You could use master version, but it's recommended to use
+        # [latest release version](https://github.com/marketplace/actions/action-notify) instead.
         uses: up9cloud/action-notify@master
         if: cancelled() == false
         env:
@@ -113,7 +114,7 @@ Common ones:
 
 - `CUSTOM_SCRIPT`: Run custom script, and will **ignore** default action
   - e.q. if you set this with TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, it will **only** run your CUSTOM_SCRIPT instead trigger built-in notify_telegram function
-- `VERBOSE`: show log or not, true or false
+- `VERBOSE`: show log or not, true or false (Drone CI: `verbose` in settings)
   - *Default value*: false
 
 Platform related:
@@ -179,14 +180,14 @@ Template related
     - Drone CI: default.drone
 - `GIT_SHA_SHORT`: Shorter commit sha `cut -c1-8`
 - `GIT_COMMIT_MESSAGE`
-  - GitHub Action: event's value `.commits[-1].message`, `.workflow_run.head_commit.message`
+  - GitHub Action: event's value `.commits[-1].message`, `.workflow_run.head_commit.message`, or `.pull_request.title` when the event has no commits
   - Drone CI: same as DRONE_COMMIT_MESSAGE
 - `GIT_COMMIT_MESSAGE_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
   - e.q. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
 - `GIT_COMMIT_MESSAGE_HTML_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but with `&`, `<`, `>` escaped, can be safely used in HTML template
   - e.q. `<pre>${GIT_COMMIT_MESSAGE_HTML_ESCAPED}</pre>`
 - `GIT_COMMITTER_USERNAME`
-  - GitHub Action: event's value `.commits[-1].committer.username`, `.workflow_run.head_commit.committer.name`
+  - GitHub Action: event's value `.commits[-1].committer.username`, `.workflow_run.head_commit.committer.name`, or `GITHUB_ACTOR` when neither exists
   - Drone CI: same as DRONE_COMMIT_AUTHOR
 
 - `STATUS_COLOR`: The RGB color hex code based on job status and following settings:
