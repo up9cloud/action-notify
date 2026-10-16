@@ -188,7 +188,8 @@ fi
 # Setup template #
 ##################
 
-if [ -z "${!K_TEMPLATE}" ]; then
+TEMPLATE="${!K_TEMPLATE}"
+if [ -z "$TEMPLATE" ]; then
 	if [ "$GITHUB_ACTIONS" == "true" ]; then
 		TEMPLATE=default
 	elif [ "$DRONE" == "true" ]; then
@@ -269,7 +270,7 @@ function default_notify_telegram() {
 	if [ -n "$TELEGRAM_PARSE_MODE" ]; then
 		arg_p+=" -p ${TELEGRAM_PARSE_MODE}"
 	fi
-	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "${!K_TELEGRAM_TEMPLATE_PATH}" "$arg_p")
+	local cmd=$(printf 'cat %s | envsubst | tg -q%s' "$TELEGRAM_TEMPLATE_PATH" "$arg_p")
 	eval "$cmd"
 }
 if [ -n "${!K_TELEGRAM_BOT_TOKEN}" ] && [ -n "${!K_TELEGRAM_CHAT_ID}" ]; then
@@ -280,14 +281,14 @@ fi
 
 function default_notify_slack_via_webhook() {
 	local parsed_file=$(mktemp)
-	cat "${!K_SLACK_TEMPLATE_PATH}" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
+	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "${!K_SLACK_WEBHOOK_URL}")
 	eval "$cmd"
 }
 function default_notify_slack_via_api() {
 	local parsed_file=$(mktemp)
 	local url=https://slack.com/api/chat.postMessage
-	cat "${!K_SLACK_TEMPLATE_PATH}" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
+	cat "$SLACK_TEMPLATE_PATH" | envsubst | jq --arg channel "${!K_SLACK_CHANNEL}" '. + {channel: $channel}' >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "authorization: Bearer %s" -H "content-type: application/json; charset=UTF-8" --data @"%s" "%s"' "${!K_SLACK_API_TOKEN}" "$parsed_file" "$url")
 	eval "$cmd"
 }
@@ -303,7 +304,7 @@ fi
 
 function default_notify_discord_via_webhook() {
 	local parsed_file=$(mktemp)
-	cat "${!K_DISCORD_TEMPLATE_PATH}" | envsubst >$parsed_file
+	cat "$DISCORD_TEMPLATE_PATH" | envsubst >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST -H "content-type: application/json" --data @"%s" "%s"' "$parsed_file" "${!K_DISCORD_WEBHOOK_URL}")
 	eval "$cmd"
 }
@@ -314,7 +315,7 @@ if [ -n "${!K_DISCORD_WEBHOOK_URL}" ]; then
 fi
 function default_notify_discord_via_bot() {
 	local parsed_file=$(mktemp)
-	cat "${!K_DISCORD_TEMPLATE_PATH}" | envsubst >$parsed_file
+	cat "$DISCORD_TEMPLATE_PATH" | envsubst >$parsed_file
 	local cmd=$(printf 'curl -sSL -X POST --http1.1 -H "content-type: application/json" -H "authorization: Bot %s" --data @"%s" "https://discordapp.com/api/v9/channels/%s/messages"' "${!K_DISCORD_BOT_TOKEN}" "$parsed_file" "${!K_DISCORD_CHANNEL_ID}")
 	exec 3>&1
 	local http_status=$(eval "$cmd" -w '%{http_code}' -o >(cat >&3))
@@ -342,7 +343,7 @@ function default_notify_line() {
 		empty_message=true
 		GIT_COMMIT_MESSAGE_ESCAPED=" "
 	fi
-	cat "${!K_LINE_TEMPLATE_PATH}" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
+	cat "$LINE_TEMPLATE_PATH" | envsubst | jq --argjson to "${LINE_TO_JSON}" '. + {to: $to}' >$parsed_file
 	if [ "$empty_message" == "true" ]; then
 		GIT_COMMIT_MESSAGE_ESCAPED=""
 	fi
