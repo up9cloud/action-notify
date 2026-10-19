@@ -1,17 +1,17 @@
 # action-notify
 
-Send notifications all in one.
+Send CI notifications to many platforms from one action.
 
-- [x] Telegram: by [telegram-bot-send.sh](https://github.com/up9cloud/telegram-bot-send.sh)
+- [x] Telegram, via [telegram-bot-send.sh](https://github.com/up9cloud/telegram-bot-send.sh)
 - Slack
-  - [x] via [Incoming WebHooks](https://api.slack.com/messaging/webhooks) app.
-  - [x] via [chat.postMessage](https://api.slack.com/methods/chat.postMessage) api.
+  - [x] via the [Incoming WebHooks](https://api.slack.com/messaging/webhooks) app
+  - [x] via the [chat.postMessage](https://api.slack.com/methods/chat.postMessage) API
 - Discord
   - [x] via [Webhooks](https://discord.com/developers/docs/resources/webhook#execute-webhook)
-  - [x] via [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
+  - [x] via a bot, with [/channels/{channel.id}/messages](https://discord.com/developers/docs/resources/channel#create-message)
+- [x] Line
 - [ ] Teams
 - [ ] Gitter
-- [x] Line
 - [ ] IRC
 - [ ] Android push notifications
 - [ ] iOS APNs
@@ -20,7 +20,7 @@ Send notifications all in one.
 
 ## Usage
 
-> GitHub Action
+### GitHub Actions
 
 ```yml
 # Pull requests from forks don't get secrets (secrets.xxx), so this won't work for them.
@@ -39,7 +39,7 @@ jobs:
           GITHUB_JOB_STATUS: ${{ job.status }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-  # If you don't want to include it in the same steps, you can use it as a separate job like this:
+  # Or notify from a separate job:
   notify:
     if: cancelled() == false
     needs: deploy
@@ -50,16 +50,16 @@ jobs:
           GITHUB_JOB_STATUS: ${{ needs.deploy.result }}
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-          # Custom template file path, relative to the repo root
+          # Custom template file, relative to the repo root
           TELEGRAM_TEMPLATE_PATH: "./test/telegram/custom.txt"
-          # Custom env, assign it from [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts)
+          # Custom variables for the template, e.g. from the [GitHub context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#contexts)
           CUSTOM_VAR1: ${{github.repository_owner}}
           CUSTOM_VAR2: "a custom variable"
 ```
 
-See more usage examples: [`.github/workflows/main.yml`](https://github.com/up9cloud/action-notify/blob/master/.github/workflows/main.yml)
+More examples: [`.github/workflows/main.yml`](https://github.com/up9cloud/action-notify/blob/master/.github/workflows/main.yml)
 
-> Drone CI
+### Drone CI
 
 ```yml
 kind: pipeline
@@ -78,9 +78,9 @@ steps:
     custom_var2: "a custom variable in settings"
 ```
 
-## Custom template
+## Custom templates
 
-Template will be parsed by [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html), e.q.
+Templates are rendered with [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html), so any environment variable can be used, e.g.
 
 ```txt
 Commit message: ${GIT_COMMIT_MESSAGE}
@@ -89,119 +89,103 @@ Custom var: ${CUSTOM_VAR2}
 Custom var in drone plugin settings: ${PLUGIN_CUSTOM_VAR2}
 ```
 
-See more examples in: `./template/**/*`
+The built-in templates under `./template/` are more examples.
 
-## Env variables
+## Environment variables
 
-You can:
+A template can use:
 
-- Use CI built-in env
-  - GitHub Action: [default environment variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
-  - Drone CI: pipeline [environment reference](https://docs.drone.io/pipeline/environment/reference/) if you're running Drone CI
-- Customize by yourself, see usage
-- Use following built-in env
+- the CI's own variables
+  - GitHub Actions: [default environment variables](https://docs.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables)
+  - Drone CI: [environment reference](https://docs.drone.io/pipeline/environment/reference/)
+- your own variables, see [Usage](#usage)
+- the variables this action sets, listed below
 
-### Built-in variables
+### General
 
-Common ones:
-
-- `GITHUB_JOB_STATUS`: **Required if** you're using `GitHub Action`, have to set this to let entrypoint.sh knows job status.
+- `GITHUB_JOB_STATUS`: **Required** on GitHub Actions, since an action cannot read the job status by itself.
 
   ```yml
   env:
     GITHUB_JOB_STATUS: ${{ job.status }}
   ```
 
-- `CUSTOM_SCRIPT`: Run custom script, and will **ignore** default action
-  - e.q. if you set this with TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID, it will **only** run your CUSTOM_SCRIPT instead trigger built-in notify_telegram function
-- `VERBOSE`: show log or not, true or false (Drone CI: `verbose` in settings)
-  - *Default value*: false
+- `CUSTOM_SCRIPT`: A script to run **instead of** the built-in notifiers.
+  - e.g. with `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` also set, only `CUSTOM_SCRIPT` runs; the built-in Telegram notifier does not.
+- `VERBOSE`: Print logs, `true` or `false` (Drone CI: `verbose` in settings)
+  - *Default value*: `false`
 
-Platform related:
+### Platforms
 
-- `Telegram`
-  - `TELEGRAM_TEMPLATE_PATH`: Telegram template file path
-    - *Default value*: `./template/telegram/${TEMPLATE}.<ext>`, `<ext>` by `TELEGRAM_PARSE_MODE`: `md` → `md`, `html` → `html`, `MarkdownV2` → `MarkdownV2.md`, `HTML` → `HTML.html`, anything else → `txt`
-  - `TELEGRAM_TEMPLATE_CONTENT`: Telegram template content. If set, it will ignore the `TELEGRAM_TEMPLATE_PATH`
-  - `TELEGRAM_BOT_TOKEN`: Get it from [@BotFather](https://telegram.me/BotFather)
-    - **Required if** want to notify telegram
-    - e.q. 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
-  - `TELEGRAM_CHAT_ID`: First sending messages to bot, then get it from `https://api.telegram.org/bot<token>/getUpdates`
-    - **Required if** want to notify telegram
-    - e.q. -123456789
-  - `TELEGRAM_MESSAGE_THREAD_ID`: The topic ID, obtainable from `/getUpdates` `message_thread_id`
-  - `TELEGRAM_PARSE_MODE`: passed to [tg.ash](https://github.com/up9cloud/telegram-bot-send.sh) `--parse-mode`: `text`, `md`, `html`, `code`, `MarkdownV2` or `HTML`. `md` and `html` use the rich message API, `MarkdownV2` and `HTML` the classic [formatting options](https://core.telegram.org/bots/api#formatting-options). `txt` is an alias of `text`
+- Telegram
+  - `TELEGRAM_BOT_TOKEN`: **Required** for Telegram. Get it from [@BotFather](https://telegram.me/BotFather)
+    - e.g. `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`
+  - `TELEGRAM_CHAT_ID`: **Required** for Telegram. Send the bot a message first, then find it in `https://api.telegram.org/bot<token>/getUpdates`
+    - e.g. `-123456789`
+  - `TELEGRAM_MESSAGE_THREAD_ID`: The topic ID, `message_thread_id` in `/getUpdates`
+  - `TELEGRAM_PARSE_MODE`: Passed to [tg.ash](https://github.com/up9cloud/telegram-bot-send.sh) `--parse-mode`: `text`, `md`, `html`, `code`, `MarkdownV2` or `HTML`. `md` and `html` use the rich message API; `MarkdownV2` and `HTML` use the classic [formatting options](https://core.telegram.org/bots/api#formatting-options). `txt` is an alias of `text`.
     - *Default value*: `text`
-- `Slack`
-  - `SLACK_TEMPLATE_PATH`: Slack template file path
+  - `TELEGRAM_TEMPLATE_PATH`: Template file path
+    - *Default value*: `./template/telegram/${TEMPLATE}.<ext>`, where `<ext>` depends on `TELEGRAM_PARSE_MODE`: `md` → `md`, `html` → `html`, `MarkdownV2` → `MarkdownV2.md`, `HTML` → `HTML.html`, anything else → `txt`
+  - `TELEGRAM_TEMPLATE_CONTENT`: Template content. Takes precedence over `TELEGRAM_TEMPLATE_PATH`
+- Slack
+  - `SLACK_WEBHOOK_URL`: **Required** to send via webhook. Get it from the Incoming WebHooks app
+    - e.g. `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX`
+  - `SLACK_API_TOKEN`: **Required** to send via API. When using a bot token, `/invite @BOT_NAME` into the channel first
+  - `SLACK_CHANNEL`: Channel ID or name. **Required** to send via API, optional via webhook
+    - e.g. `#general`
+  - `SLACK_TEMPLATE_PATH`: Template file path
     - *Default value*: `./template/slack/${TEMPLATE}.json`
-  - `SLACK_TEMPLATE_CONTENT`: Slack template content. If set, it will ignore the `SLACK_TEMPLATE_PATH`
-  - `SLACK_WEBHOOK_URL`: Get it from `Incoming WebHooks` app
-    - **Required if** want to notify slack via webhook
-    - e.q. `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX`
-  - `SLACK_API_TOKEN`: Slack api token, various. If you were using bot token, remember `/invite @BOT_NAME` first
-    - **Required if** want to notify slack via api
-  - `SLACK_CHANNEL`: Slack channel id
-    - **Required if** want to notify slack via api. (good to have if via webhook)
-    - e.q. `#general`
-- `Discord`
-  - `DISCORD_TEMPLATE_PATH`: Discord template file path
+  - `SLACK_TEMPLATE_CONTENT`: Template content. Takes precedence over `SLACK_TEMPLATE_PATH`
+- Discord
+  - `DISCORD_WEBHOOK_URL`: **Required** to send via webhook. Get it from `Edit Channel -> Integrations -> Webhooks`
+  - `DISCORD_BOT_TOKEN`: **Required** to send via bot.
+    1. Get the token from [Developer Applications](https://discord.com/developers/applications): `New Application (or choose an existing one) -> Bot -> Token`
+    2. Add the bot to your server: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=0&scope=bot%20applications.commands`. The `client_id` is under [Developer Applications](https://discord.com/developers/applications) -> the application -> `OAuth2 -> CLIENT ID`
+    3. For a private channel, also add the bot to it: `Edit Channel -> Permissions -> Add members or roles`
+  - `DISCORD_CHANNEL_ID`: **Required** to send via bot. Enable `User Settings -> Advanced -> Developer Mode`, then right-click the channel -> `Copy ID`. It is also the last part of the channel's URL in the browser, e.g. `https://discord.com/channels/.../<channel id>`
+  - `DISCORD_TEMPLATE_PATH`: Template file path
     - *Default value*: `./template/discord/${TEMPLATE}.json`
-  - `DISCORD_TEMPLATE_CONTENT`: Discord template content. If set, it will ignore the `DISCORD_TEMPLATE_PATH`
-  - `DISCORD_WEBHOOK_URL`: Get it from `Edit Channel -> Integrations -> Webhooks`
-    - **Required if** want to notify discord via webhook
-  - `DISCORD_BOT_TOKEN`: Get it from [Developer Applications](https://discord.com/developers/applications) -> `New Application (or choose existing) -> Bot -> Token`. Additionally, you need to add the application (bot) into your server: `https://discord.com/api/oauth2/authorize?client_id=<client_id>&permissions=0&scope=bot%20applications.commands`. To find the `client_id`, go to [Developer Applications](https://discord.com/developers/applications) -> select the application -> `OAuth2 -> CLIENT ID`. If the channel is private, also need to add the bot to the channel: choose the channel -> `Edit Channel -> Permissions -> Add members or roles`
-    - **Required if** want to notify discord via bot
-  - `DISCORD_CHANNEL_ID`: First, enable Developer Mode [`User Settings -> Advanced -> Developer Mode`], then copy channel ID [`Right mouse click on needed channel -> Copy ID`]. Also, you can find ID in browser app url (e.q. `https://discord.com/channels/.../<channel id>`)
-    - **Required if** want to notify discord via bot
-- `Line`
-  - `LINE_TEMPLATE_PATH`: Line.me template file path
-    - *Default value*: `./template/line.me/${TEMPLATE}.json`
-  - `LINE_TEMPLATE_CONTENT`: Line.me template content. If set, it will ignore the `LINE_TEMPLATE_PATH`
-  - `LINE_CHANNEL_ACCESS_TOKEN`: Get it from Developer console -> Bot -> `Messaging api -> Channel access token (long-lived)`
-    - **Required if** want to notify line.me
-  - `LINE_TO`: The user ID, group ID, or chat ID of the recipient. Obtain this value from webhook payloads (you need to set up your own webhook server to receive and extract it).
-    - **Required if** want to notify line.me
-    - It can be multiple ids
-      - All IDs must be `user` IDs; if you need to notify a mix of user, group, or chat IDs, you must run this action separately one by one.
-      - Separate multiple IDs with a comma, e.g.
+  - `DISCORD_TEMPLATE_CONTENT`: Template content. Takes precedence over `DISCORD_TEMPLATE_PATH`
+- Line
+  - `LINE_CHANNEL_ACCESS_TOKEN`: **Required** for Line. Get it from the developer console: `Bot -> Messaging API -> Channel access token (long-lived)`
+  - `LINE_TO`: **Required** for Line. The user, group or chat ID of the recipient, found in webhook payloads (which needs your own webhook server)
+    - Multiple IDs are separated by commas, and must all be user IDs. To notify a mix of user, group and chat IDs, run this action once per ID.
 
       ```yml
       env:
         LINE_TO: "Uxxxxxxxxxxx,Uxxxxxxxxxxx"
       ```
 
-Template related
+  - `LINE_TEMPLATE_PATH`: Template file path
+    - *Default value*: `./template/line.me/${TEMPLATE}.json`
+  - `LINE_TEMPLATE_CONTENT`: Template content. Takes precedence over `LINE_TEMPLATE_PATH`
 
-- `TEMPLATE`: Built in template style, see `./template/<vendor variants>/${TEMPLATE}.<ext>`
-  - Could be `debug`, `default` or `default.drone`
-  - *Default value*
-    - GitHub Action: default
-    - Drone CI: default.drone
-- `GIT_SHA_SHORT`: Shorter commit sha `cut -c1-8`
+### Template variables
+
+- `TEMPLATE`: Built-in template style, `./template/<platform>/${TEMPLATE}.<ext>`: `debug`, `default` or `default.drone`
+  - *Default value*: `default` on GitHub Actions, `default.drone` on Drone CI
+- `GIT_SHA_SHORT`: The first 8 characters of the commit SHA
 - `GIT_COMMIT_MESSAGE`
-  - GitHub Action: event's value `.commits[-1].message`, `.head_commit.message`, `.workflow_run.head_commit.message` or `.pull_request.title`; `(<event name> event)` when the event has none of them, e.g. `schedule`
-  - Drone CI: same as DRONE_COMMIT_MESSAGE
-- `GIT_COMMIT_MESSAGE_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
-  - e.q. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
-- `GIT_COMMIT_MESSAGE_HTML_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but with `&`, `<`, `>` escaped, can be safely used in HTML template
-  - e.q. `<pre>${GIT_COMMIT_MESSAGE_HTML_ESCAPED}</pre>`
+  - GitHub Actions: the first of the event's `.commits[-1].message`, `.head_commit.message`, `.workflow_run.head_commit.message` or `.pull_request.title`; `(<event name> event)` when there is none, e.g. on `schedule`
+  - Drone CI: `DRONE_COMMIT_MESSAGE`
+- `GIT_COMMIT_MESSAGE_ESCAPED`: `GIT_COMMIT_MESSAGE` escaped for JSON
+  - e.g. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
+- `GIT_COMMIT_MESSAGE_HTML_ESCAPED`: `GIT_COMMIT_MESSAGE` with `&`, `<` and `>` escaped, for HTML
+  - e.g. `<pre>${GIT_COMMIT_MESSAGE_HTML_ESCAPED}</pre>`
 - `GIT_COMMITTER_USERNAME`
-  - GitHub Action: event's value `.commits[-1].committer.username`, `.head_commit.committer.username`, `.workflow_run.head_commit.committer.name`, or `GITHUB_ACTOR` when none exists
-  - Drone CI: same as DRONE_COMMIT_AUTHOR
+  - GitHub Actions: the first of the event's `.commits[-1].committer.username`, `.head_commit.committer.username` or `.workflow_run.head_commit.committer.name`; `GITHUB_ACTOR` when there is none
+  - Drone CI: `DRONE_COMMIT_AUTHOR`
+- `STATUS_COLOR`: Hex RGB color for the job status, set by:
+  - `STATUS_COLOR_SUCCESS`: *Default value*: `#22863a`
+  - `STATUS_COLOR_FAILURE`: *Default value*: `#cb2431`
+  - `STATUS_COLOR_CANCELLED`: *Default value*: `#6a737d`
+- `STATUS_COLOR_DECIMAL`: `STATUS_COLOR` as a decimal number
+- `STATUS_EMOJI`: Emoji for the job status, set by:
+  - `STATUS_EMOJI_SUCCESS`: *Default value*: `🟢`
+  - `STATUS_EMOJI_FAILURE`: *Default value*: `🔴`
+  - `STATUS_EMOJI_CANCELLED`: *Default value*: `⚪️`
 
-- `STATUS_COLOR`: The RGB color hex code based on job status and following settings:
-  - `STATUS_COLOR_SUCCESS`: The success color
-    - *Default value*: `#22863a`
-  - `STATUS_COLOR_FAILURE`: The failure color
-    - *Default value*: `#cb2431`
-  - `STATUS_COLOR_CANCELLED`: The cancelled color
-    - *Default value*: `#6a737d`
-- `STATUS_COLOR_DECIMAL`: The decimal code of `STATUS_COLOR`
-- `STATUS_EMOJI`: The emoji based on job status and following settings:
-  - `STATUS_EMOJI_SUCCESS`: The success emoji
-    - *Default value*: `🟢`
-  - `STATUS_EMOJI_FAILURE`: The failure emoji
-    - *Default value*: `🔴`
-  - `STATUS_EMOJI_CANCELLED`: The cancelled emoji
-    - *Default value*: `⚪️`
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md), including how to release.
