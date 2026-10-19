@@ -65,8 +65,9 @@ if [ "$GITHUB_ACTIONS" == "true" ]; then
 		export GIT_COMMIT_MESSAGE=$(event '.workflow_run.head_commit.message')
 		export GIT_COMMITTER_USERNAME=$(event '.workflow_run.head_commit.committer.name')
 	else
-		export GIT_COMMIT_MESSAGE=$(event '.commits[-1].message // .pull_request.title')
-		export GIT_COMMITTER_USERNAME=$(event '.commits[-1].committer.username')
+		# Tag pushes have an empty .commits but a head_commit
+		export GIT_COMMIT_MESSAGE=$(event '.commits[-1].message // .head_commit.message // .pull_request.title')
+		export GIT_COMMITTER_USERNAME=$(event '.commits[-1].committer.username // .head_commit.committer.username')
 
 		# backward compatible
 		export GIT_HEAD_COMMIT_MESSAGE=$(event '.head_commit.message')
@@ -74,6 +75,10 @@ if [ "$GITHUB_ACTIONS" == "true" ]; then
 	fi
 	if [ -z "$GIT_COMMITTER_USERNAME" ]; then
 		export GIT_COMMITTER_USERNAME="$GITHUB_ACTOR"
+	fi
+	# Slack rejects an empty text, and schedule, workflow_dispatch, ... carry no commit
+	if [ -z "$GIT_COMMIT_MESSAGE" ]; then
+		export GIT_COMMIT_MESSAGE="(${GITHUB_EVENT_NAME} event)"
 	fi
 	export GIT_COMMIT_MESSAGE_ESCAPED=$(printf '%s' "$GIT_COMMIT_MESSAGE" | jq -RsM | sed -e 's/^"//' -e 's/"$//')
 	export GIT_SHA_SHORT=$(echo "$GITHUB_SHA" | cut -c1-8)

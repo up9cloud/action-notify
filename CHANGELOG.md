@@ -20,8 +20,9 @@
 
 - `GIT_COMMIT_MESSAGE_HTML_ESCAPED`, for HTML templates.
 - `TELEGRAM_PARSE_MODE: code`.
-- For events without commits (`pull_request`, `schedule`, `workflow_dispatch`, ...),
-  `GIT_COMMIT_MESSAGE` falls back to the PR title and `GIT_COMMITTER_USERNAME` to `GITHUB_ACTOR`.
+- For events without commits, `GIT_COMMIT_MESSAGE` falls back to the head commit (tag pushes),
+  then the PR title (`pull_request`), then `(<event name> event)` (`schedule`,
+  `workflow_dispatch`, ...); `GIT_COMMITTER_USERNAME` falls back to `GITHUB_ACTOR`.
 
 ### Fixed
 
@@ -31,6 +32,8 @@
 - Running outside GitHub Actions and Drone works again.
 - Drone: default templates, `*_TEMPLATE_CONTENT`, `template` and `verbose` settings are honored.
 - Telegram: setting `TELEGRAM_PARSE_MODE` no longer drops `TELEGRAM_MESSAGE_THREAD_ID`.
+- Telegram `MarkdownV2` default templates no longer break on refs containing `.`, `-` or `_`,
+  e.g. `refs/tags/v1.0`.
 - Telegram HTML parse mode no longer breaks on `<...>` in commit messages, e.g. a
   `Co-Authored-By` email.
 - The `debug` template no longer breaks on multi-line commit messages, and fits Telegram's and

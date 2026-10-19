@@ -180,14 +180,14 @@ Template related
     - Drone CI: default.drone
 - `GIT_SHA_SHORT`: Shorter commit sha `cut -c1-8`
 - `GIT_COMMIT_MESSAGE`
-  - GitHub Action: event's value `.commits[-1].message`, `.workflow_run.head_commit.message`, or `.pull_request.title` when the event has no commits
+  - GitHub Action: event's value `.commits[-1].message`, `.head_commit.message`, `.workflow_run.head_commit.message` or `.pull_request.title`; `(<event name> event)` when the event has none of them, e.g. `schedule`
   - Drone CI: same as DRONE_COMMIT_MESSAGE
 - `GIT_COMMIT_MESSAGE_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but escaped, can be safely used in JSON template
   - e.q. `{"msg":"${GIT_COMMIT_MESSAGE_ESCAPED}"}`
 - `GIT_COMMIT_MESSAGE_HTML_ESCAPED`: Same as GIT_COMMIT_MESSAGE, but with `&`, `<`, `>` escaped, can be safely used in HTML template
   - e.q. `<pre>${GIT_COMMIT_MESSAGE_HTML_ESCAPED}</pre>`
 - `GIT_COMMITTER_USERNAME`
-  - GitHub Action: event's value `.commits[-1].committer.username`, `.workflow_run.head_commit.committer.name`, or `GITHUB_ACTOR` when neither exists
+  - GitHub Action: event's value `.commits[-1].committer.username`, `.head_commit.committer.username`, `.workflow_run.head_commit.committer.name`, or `GITHUB_ACTOR` when none exists
   - Drone CI: same as DRONE_COMMIT_AUTHOR
 
 - `STATUS_COLOR`: The RGB color hex code based on job status and following settings:
